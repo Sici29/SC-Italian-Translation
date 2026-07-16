@@ -16,7 +16,7 @@ Windows in un unico file, backup automatico e ripristino.
 Il file da scaricare è:
 
 ```text
-StarCitizen_Traduzione_Italiana_4.9_R1.exe
+StarCitizen_Traduzione_Italiana_4.9_R2.exe
 ```
 
 ### 2. Chiudi gioco e launcher
@@ -85,7 +85,7 @@ italiano tono, atmosfera e intenzione di ogni scena.
   approvate, senza traduzione automatica in massa.
 - **Voci riconoscibili:** dialoghi riscritti nel registro del singolo NPC,
   preservando ironia, aggressività, formalità, gergo e ritmo della battuta.
-- **Glossario vincolante:** 4.690 decisioni terminologiche per UI, volo,
+- **Glossario vincolante:** 4.733 decisioni terminologiche per UI, volo,
   equipaggiamento, missioni, organizzazioni e lore.
 - **Compatibilità con mappe e guide:** pianeti, città, avamposti, fazioni,
   modelli, pubblicazioni e nomi utili a orientarsi restano nella forma canonica.
@@ -98,7 +98,7 @@ Scelte come `Hangar`, `Multitool`, `Centro Cargo`, `Area di atterraggio` e
 `Piattaforma di atterraggio` non sono casuali: sono registrate nel glossario e
 applicate in modo coerente.
 
-## Stato della Revisione 1
+## Stato della Revisione 2
 
 - Copertura: **90.121 / 90.121 chiavi**.
 - Stringhe traducibili approvate manualmente: **89.193 / 89.193**.
@@ -107,8 +107,13 @@ applicate in modo coerente.
 - Versione interna verificata: **4.9.186.42610**.
 - Chiavi mancanti, extra, duplicate o malformate: **0**.
 - Caratteri corrotti o mojibake: **0**.
-- Versione pubblica: **Traduzione italiana Star Citizen 4.9 — Revisione 1**.
-- SHA-256 installer: `9A6DAC324BA786BA78157AEAD3C4F42EEDDEFA49F1AE9D2BBE6E107CD8F0F86F`.
+- Versione pubblica: **Traduzione italiana Star Citizen 4.9 — Revisione 2**.
+- Correzioni rispetto alla R1: **546 stringhe**; le ultime 280 sono concentrate
+  su inventario, Gestione flotta, mobiGlas, tooltip e maiuscole accentate dei
+  comandi. Le altre rifiniscono creazione del personaggio, menu principale e
+  impostazioni.
+- SHA-256 payload: `6F482EE99E1692128EEC8F13CFD0F335237789D00E7D75C2147B9CBEC2D19B42`.
+- SHA-256 installer: `2BF58313B367D097FD038CD47B83938B804819952A47E57C558DD623FF512800`.
 
 La base inglese è stata estratta direttamente dalla LIVE installata e confrontata
 byte per byte con quella usata per generare il payload pubblico.

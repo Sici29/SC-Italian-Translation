@@ -7,7 +7,7 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 $Payload = Join-Path $RepoRoot "translation"
 $Script = Join-Path $PSScriptRoot "star_citizen_it_installer.py"
 $VersionInfo = Join-Path $PSScriptRoot "version_info.txt"
-$Build = Join-Path $RepoRoot "build"
+$Build = Join-Path $RepoRoot "build\r2"
 $Work = Join-Path $Build "work"
 $Spec = Join-Path $Build "spec"
 $Dist = Join-Path $Build "dist"
@@ -21,7 +21,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $Payload "Data\Localization\italian_
     --clean `
     --onefile `
     --console `
-    --name "StarCitizen_Traduzione_Italiana_4.9_R1" `
+    --name "StarCitizen_Traduzione_Italiana_4.9_R2" `
     --version-file $VersionInfo `
     --add-data "$Payload;payload" `
     --workpath $Work `
@@ -33,7 +33,7 @@ if ($LASTEXITCODE -ne 0) {
     throw "Creazione installer non riuscita."
 }
 
-$Exe = Join-Path $Dist "StarCitizen_Traduzione_Italiana_4.9_R1.exe"
+$Exe = Join-Path $Dist "StarCitizen_Traduzione_Italiana_4.9_R2.exe"
 if (-not (Test-Path -LiteralPath $Exe)) {
     throw "L'eseguibile finale non è stato creato."
 }

@@ -1,25 +1,29 @@
-# Traduzione italiana Star Citizen 4.9 — Revisione 1
+# Traduzione italiana Star Citizen 4.9 — Revisione 2
 
-Prima release pubblica completa della localizzazione italiana non ufficiale per
+Seconda revisione pubblica della localizzazione italiana non ufficiale per
 Star Citizen LIVE 4.9.
 
-## Contenuto
+## Novità della R2
 
-- Copertura completa di 90.121 / 90.121 chiavi.
-- 89.193 stringhe traducibili approvate manualmente.
-- Glossario vincolante con 4.690 decisioni terminologiche.
-- Dialoghi revisionati preservando la voce dei singoli personaggi.
-- Nomi canonici e riferimenti di orientamento mantenuti per mappe e guide.
-- Terminologia coerente per interfaccia, volo, missioni, oggetti, veicoli e lore.
-- Didascalie attoriali visibili tradotte e veri parametri runtime conservati.
-- Apostrofi e virgolette limitati ai caratteri ASCII supportati dal gioco.
+- 546 stringhe aggiornate rispetto alla R1 dopo la verifica diretta nel gioco.
+- 280 di queste appartengono all'audit UI finale.
+- Rifinita la creazione del personaggio e corretti menu principale e impostazioni.
+- Eliminati testi troncati e sovrapposti nell'inventario.
+- Revisionati stati, pulsanti e preventivo del terminale Gestione flotta.
+- Compattate le statistiche dei tooltip senza perdere il significato tecnico.
+- Corretti i pulsanti e la ricerca del mobiGlas.
+- Normalizzate le maiuscole accentate in 187 voci di comandi e categorie.
+- Consolidato il glossario a 4.733 decisioni terminologiche.
+
+La copertura resta completa: 90.121 / 90.121 chiavi, con 89.193 stringhe
+traducibili approvate manualmente e nessuna stringa in sospeso.
 
 ## Installer unico
 
 La release contiene un solo file:
 
 ```text
-StarCitizen_Traduzione_Italiana_4.9_R1.exe
+StarCitizen_Traduzione_Italiana_4.9_R2.exe
 ```
 
 L'installer rileva la cartella LIVE, verifica la build, controlla il payload,
@@ -31,8 +35,8 @@ crea un backup, configura testo italiano e audio inglese e offre il ripristino.
 - Versione interna: `4.9.186.42610`
 - Change: `12232306`
 - Chiavi: `90.121`
-- SHA-256 payload: `CEB1189451F36F07F9A9A2C9D39E5FFF8FB9100D81B760094F72E357040062C8`
-- SHA-256 installer: `9A6DAC324BA786BA78157AEAD3C4F42EEDDEFA49F1AE9D2BBE6E107CD8F0F86F`
+- SHA-256 payload: `6F482EE99E1692128EEC8F13CFD0F335237789D00E7D75C2147B9CBEC2D19B42`
+- SHA-256 installer: `2BF58313B367D097FD038CD47B83938B804819952A47E57C558DD623FF512800`
 
 L'installer blocca per impostazione predefinita le build future non ancora
 verificate.
