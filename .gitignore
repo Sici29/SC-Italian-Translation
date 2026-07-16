@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.tmp
+.venv/
+build/
+dist/
+*.spec
+*.exe
+SHA256SUMS.txt
+
+# Non aggiungere mai sorgenti inglesi o riferimenti privati del gioco.
+english/
+global_english.ini
+master_*.csv
+private/

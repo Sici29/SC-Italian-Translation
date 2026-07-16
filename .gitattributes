@@ -1,0 +1,2 @@
+# Il payload deve mantenere BOM e ritorni a capo esattamente come validati.
+translation/Data/Localization/italian_(italy)/global.ini -text

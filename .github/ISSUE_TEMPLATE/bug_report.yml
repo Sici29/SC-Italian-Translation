@@ -1,0 +1,54 @@
+name: Segnala un problema
+description: Traduzione, interfaccia, installazione o compatibilità
+title: "[Segnalazione] "
+labels:
+  - da verificare
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Tipo di problema
+      options:
+        - Traduzione o tono
+        - Termine rimasto in inglese
+        - Maiuscole, genere o concordanza
+        - Testo tagliato o interfaccia
+        - Installer o ripristino
+        - Compatibilità dopo un aggiornamento
+    validations:
+      required: true
+  - type: input
+    id: build
+    attributes:
+      label: Versione del gioco
+      placeholder: "Esempio: LIVE 4.9, change 12232306"
+    validations:
+      required: true
+  - type: textarea
+    id: location
+    attributes:
+      label: Dove compare
+      description: Indica schermata, missione, NPC, oggetto o luogo.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Descrizione e proposta
+      description: Riporta il testo visualizzato e spiega la correzione suggerita.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Trascina qui un'immagine, senza dati personali o file del gioco.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Conferme
+      options:
+        - label: Ho cercato segnalazioni duplicate.
+          required: true
+        - label: Non sto caricando file originali del gioco o dati dell'account.
+          required: true
