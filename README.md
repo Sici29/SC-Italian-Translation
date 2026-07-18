@@ -16,7 +16,7 @@ Windows in un unico file, backup automatico e ripristino.
 Il file da scaricare è:
 
 ```text
-StarCitizen_Traduzione_Italiana_4.9_R2.exe
+StarCitizen_Traduzione_Italiana_4.9_R3.exe
 ```
 
 ### 2. Chiudi gioco e launcher
@@ -28,7 +28,7 @@ Chiudi completamente **Star Citizen** e **RSI Launcher**.
 Fai doppio clic sull'EXE e premi **Invio**. L'installer:
 
 - trova automaticamente la cartella `LIVE`;
-- verifica che la build installata sia quella supportata;
+- verifica il contenuto della localizzazione inglese installata;
 - controlla l'integrità delle 90.121 stringhe italiane incorporate;
 - crea un backup prima di modificare qualsiasi file;
 - installa la lingua italiana mantenendo l'audio inglese;
@@ -45,7 +45,7 @@ Non servono Python, archivi da estrarre o modifiche manuali.
 
 La lingua viene configurata automaticamente. Se un aggiornamento del launcher
 rimuove i file locali, basta riaprire l'installer: non installa mai alla cieca
-su una build che non è stata verificata.
+su una build con stringhe inglesi diverse da quelle già revisionate.
 
 ## Se l'installer non trova il gioco
 
@@ -98,25 +98,31 @@ Scelte come `Hangar`, `Multitool`, `Centro Cargo`, `Area di atterraggio` e
 `Piattaforma di atterraggio` non sono casuali: sono registrate nel glossario e
 applicate in modo coerente.
 
-## Stato della Revisione 2
+## Stato della Revisione 3
 
 - Copertura: **90.121 / 90.121 chiavi**.
 - Stringhe traducibili approvate manualmente: **89.193 / 89.193**.
 - Stringhe in sospeso: **0**.
-- Gioco verificato: **LIVE 4.9**, change **12232306**.
-- Versione interna verificata: **4.9.186.42610**.
+- Build verificate: change **12232306** e change **12248363**.
+- Versione interna più recente verificata: **4.9.186.58667**.
+- Differenze inglesi fra le due build: **0 aggiunte, 0 rimosse, 0 modificate**.
 - Chiavi mancanti, extra, duplicate o malformate: **0**.
 - Caratteri corrotti o mojibake: **0**.
-- Versione pubblica: **Traduzione italiana Star Citizen 4.9 — Revisione 2**.
+- Versione pubblica: **Traduzione italiana Star Citizen 4.9 — Revisione 3**.
 - Correzioni rispetto alla R1: **546 stringhe**; le ultime 280 sono concentrate
   su inventario, Gestione flotta, mobiGlas, tooltip e maiuscole accentate dei
   comandi. Le altre rifiniscono creazione del personaggio, menu principale e
   impostazioni.
+- La R3 non modifica il testo italiano della R2: introduce il controllo
+  contenutistico delle build future e la nuova icona dell'installer.
+- SHA-256 sorgente inglese: `E5574DF1178A980C4B8CFA1FB812D813B527CBC65BC613631EB0ABBFECBDD1A5`.
 - SHA-256 payload: `6F482EE99E1692128EEC8F13CFD0F335237789D00E7D75C2147B9CBEC2D19B42`.
-- SHA-256 installer: `2BF58313B367D097FD038CD47B83938B804819952A47E57C558DD623FF512800`.
+- SHA-256 installer: `0EBEA17BAF25400B1715DE3F13ED54BC7533D0927A8C1BBB196173CE33B40390`.
 
 La base inglese è stata estratta direttamente dalla LIVE installata e confrontata
-byte per byte con quella usata per generare il payload pubblico.
+byte per byte con quella usata per generare il payload pubblico. Dopo un
+aggiornamento, l'installer ripete questo controllo sul computer dell'utente:
+se l'hash inglese è identico prosegue, altrimenti si ferma.
 
 ## Cosa resta in inglese
 
@@ -163,6 +169,8 @@ Il repository pubblico contiene:
 - `glossary/`: dizionario editoriale vincolante;
 - `docs/`: guida stilistica e criteri di localizzazione;
 - `tools/`: sorgente dell'installer;
+- `tools/vendor/`: componente StarBreaker usato per la sola verifica locale del
+  `Data.p4k`, con avviso di licenza;
 - `tests/`: test di installazione, ripristino e integrità.
 
 Non contiene il `global.ini` inglese, traduzioni esterne di confronto, estrazioni
@@ -178,6 +186,14 @@ python -m pip install -r requirements-build.txt
 ```
 
 </details>
+
+## Componente di verifica
+
+L'installer incorpora
+[StarBreaker 0.3.2](https://github.com/diogotr7/StarBreaker), distribuito con
+licenza MIT, per estrarre esclusivamente il file inglese necessario al controllo
+di compatibilità. L'operazione resta locale e il file temporaneo viene eliminato
+automaticamente.
 
 ## Nota legale
 

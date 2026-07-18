@@ -167,12 +167,61 @@ def test_rejects_unverified_build() -> None:
         root = Path(folder)
         configure_work_dir(root)
         game = create_fake_game(root, change="99999999")
+        original_probe = installer.inspect_source_localization
+        installer.inspect_source_localization = lambda _game_dir: {
+            "available": True,
+            "matches": False,
+            "sha256": "CHANGED",
+            "bytes": 1,
+            "error": None,
+        }
         try:
-            installer.install_translation(game, force_open=True)
-        except RuntimeError as exc:
-            assert "non è ancora verificata" in str(exc)
-        else:
-            raise AssertionError("Una build non verificata è stata accettata senza --force")
+            try:
+                installer.install_translation(game, force_open=True)
+            except RuntimeError as exc:
+                assert "non è ancora verificata" in str(exc)
+                assert "localizzazione inglese" in str(exc)
+            else:
+                raise AssertionError(
+                    "Una build con sorgente inglese cambiata è stata accettata."
+                )
+        finally:
+            installer.inspect_source_localization = original_probe
+
+
+def test_accepts_new_build_when_source_is_identical() -> None:
+    with TemporaryDirectory() as folder:
+        root = Path(folder)
+        configure_work_dir(root)
+        game = create_fake_game(root, change="12248363")
+        info = installer.read_build_info(game)
+        original_probe = installer.inspect_source_localization
+        installer.inspect_source_localization = lambda _game_dir: {
+            "available": True,
+            "matches": True,
+            "sha256": installer.EXPECTED_SOURCE_SHA256,
+            "bytes": installer.EXPECTED_SOURCE_BYTES,
+            "error": None,
+        }
+        try:
+            report = installer.compatibility_report(info, game)
+            assert report["compatible"] is True
+            assert report["method"] == "source_sha256"
+            assert "sorgente inglese invariata" in report["reason"]
+
+            manifest = json.loads((game / installer.BUILD_MANIFEST_NAME).read_text())
+            manifest["Data"]["Branch"] = "sc-alpha-4.10.0"
+            (game / installer.BUILD_MANIFEST_NAME).write_text(
+                json.dumps(manifest), encoding="utf-8"
+            )
+            future = installer.compatibility_report(
+                installer.read_build_info(game),
+                game,
+            )
+            assert future["compatible"] is True
+            assert future["method"] == "source_sha256"
+        finally:
+            installer.inspect_source_localization = original_probe
 
 
 def main() -> int:
@@ -183,6 +232,7 @@ def main() -> int:
         test_install_and_restore_created_files,
         test_install_and_restore_existing_files,
         test_rejects_unverified_build,
+        test_accepts_new_build_when_source_is_identical,
     ]
     for test in tests:
         test()

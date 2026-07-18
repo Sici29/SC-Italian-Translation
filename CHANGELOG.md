@@ -1,5 +1,20 @@
 # Registro delle versioni
 
+## 4.9 — Revisione 3
+
+- Reso l'installer compatibile con gli aggiornamenti che non modificano la
+  localizzazione inglese, senza dipendere dal solo numero di build.
+- Aggiunta la verifica SHA-256 del `global.ini` inglese estratto direttamente
+  dal `Data.p4k`: contenuto identico significa compatibilità; contenuto diverso
+  blocca l'installazione.
+- Verificata la nuova build `4.9.186.58667`, change `12248363`, senza variazioni
+  rispetto alle 90.121 stringhe della R2.
+- Aggiunta un'icona dedicata basata sul simbolo del gioco, con sfondo
+  trasparente e badge italiano maggiorato sul modello dell'installer ANIIMO.
+- Incorporato StarBreaker 0.3.2, distribuito con licenza MIT, esclusivamente per
+  il controllo locale del file inglese.
+- Il testo italiano e il relativo hash restano invariati rispetto alla R2.
+
 ## 4.9 — Revisione 2
 
 - Aggiornate 546 stringhe rispetto alla R1; 280 appartengono all'audit UI finale.

@@ -7,6 +7,7 @@ build/
 dist/
 *.spec
 *.exe
+!tools/vendor/starbreaker/0.3.2/starbreaker.exe
 SHA256SUMS.txt
 
 # Non aggiungere mai sorgenti inglesi o riferimenti privati del gioco.

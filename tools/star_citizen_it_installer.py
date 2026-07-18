@@ -13,6 +13,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -29,13 +30,17 @@ except Exception:
 
 
 APP_TITLE = "Star Citizen - Traduzione Italiana Non Ufficiale"
-TRANSLATION_VERSION = "4.9-R2"
-RELEASE_TAG = "sc-4.9-r2"
-INSTALLER_FILENAME = "StarCitizen_Traduzione_Italiana_4.9_R2.exe"
+TRANSLATION_VERSION = "4.9-R3"
+RELEASE_TAG = "sc-4.9-r3"
+INSTALLER_FILENAME = "StarCitizen_Traduzione_Italiana_4.9_R3.exe"
 SUPPORTED_BRANCH = "sc-alpha-4.9.0"
 SUPPORTED_P4_CHANGE = "12232306"
+VERIFIED_P4_CHANGES = frozenset({SUPPORTED_P4_CHANGE})
 EXPECTED_ENTRIES = 90121
 EXPECTED_PAYLOAD_SHA256 = "6F482EE99E1692128EEC8F13CFD0F335237789D00E7D75C2147B9CBEC2D19B42"
+EXPECTED_SOURCE_SHA256 = "E5574DF1178A980C4B8CFA1FB812D813B527CBC65BC613631EB0ABBFECBDD1A5"
+EXPECTED_SOURCE_BYTES = 10439724
+STARBREAKER_VERSION = "0.3.2"
 
 GITHUB_PROJECT_URL = "https://github.com/Sici29/SC-Italian-Translation"
 GITHUB_RELEASES_URL = GITHUB_PROJECT_URL + "/releases"
@@ -45,6 +50,7 @@ GITHUB_API_LATEST = (
 )
 
 TARGET_GLOBAL_REL = Path("Data") / "Localization" / "italian_(italy)" / "global.ini"
+SOURCE_GLOBAL_REL = Path("Data") / "Localization" / "english" / "global.ini"
 BUILD_MANIFEST_NAME = "build_manifest.id"
 USER_CFG_NAME = "user.cfg"
 LANGUAGE_SETTINGS = {
@@ -66,6 +72,7 @@ USER_WORK_DIR = Path(
 SETTINGS_PATH = USER_WORK_DIR / "settings.json"
 STATE_PATH = USER_WORK_DIR / "installed_state.json"
 _INSTANCE_MUTEX = None
+_SOURCE_CHECK_CACHE: dict[tuple[str, int, int], dict] = {}
 
 
 class ConsoleColor:
@@ -173,6 +180,32 @@ def source_payload_root() -> Path:
             return candidate
     checked = "\n".join(str(path) for path in candidates)
     raise FileNotFoundError(f"Payload italiano non trovato. Percorsi controllati:\n{checked}")
+
+
+def starbreaker_path() -> Path:
+    executable = "starbreaker.exe" if os.name == "nt" else "starbreaker"
+    if getattr(sys, "frozen", False):
+        candidates = [BUNDLE_DIR / "vendor" / executable]
+    else:
+        script = Path(__file__).resolve()
+        candidates = [
+            script.parent / "vendor" / "starbreaker" / STARBREAKER_VERSION / executable,
+            script.parents[2]
+            / "05_TOOLS"
+            / "vendor"
+            / "StarBreaker"
+            / STARBREAKER_VERSION
+            / executable,
+            BUNDLE_DIR / "vendor" / executable,
+        ]
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    checked = "\n".join(str(path) for path in candidates)
+    raise FileNotFoundError(
+        "Il modulo di verifica del contenuto non è disponibile. "
+        f"Percorsi controllati:\n{checked}"
+    )
 
 
 def validate_payload(path: Path) -> dict:
@@ -350,15 +383,143 @@ def read_build_info(game_dir: Path) -> BuildInfo:
     )
 
 
-def compatibility_status(info: BuildInfo) -> tuple[bool, str]:
-    if info.branch != SUPPORTED_BRANCH:
-        return False, f"canale/build {info.branch or 'non identificata'} non supportata"
-    if info.requested_p4_change != SUPPORTED_P4_CHANGE:
-        return False, (
-            f"change {info.requested_p4_change or 'non identificato'} non verificato; "
-            f"atteso {SUPPORTED_P4_CHANGE}"
+def inspect_source_localization(game_dir: Path) -> dict:
+    expected = {
+        "path": SOURCE_GLOBAL_REL.as_posix(),
+        "expected_sha256": EXPECTED_SOURCE_SHA256,
+        "expected_bytes": EXPECTED_SOURCE_BYTES,
+        "helper": f"StarBreaker {STARBREAKER_VERSION}",
+    }
+    try:
+        p4k = game_dir / "Data.p4k"
+        if not p4k.is_file():
+            raise FileNotFoundError(f"Archivio di gioco non trovato: {p4k}")
+        p4k_stat = p4k.stat()
+        cache_key = (str(p4k.resolve()), p4k_stat.st_size, p4k_stat.st_mtime_ns)
+        cached = _SOURCE_CHECK_CACHE.get(cache_key)
+        if cached is not None:
+            return dict(cached)
+        helper = starbreaker_path()
+        with tempfile.TemporaryDirectory(prefix="sc-it-content-check-") as folder:
+            output = Path(folder)
+            command = [
+                str(helper),
+                "p4k",
+                "extract",
+                "--p4k",
+                str(p4k),
+                "--output",
+                str(output),
+                "--filter",
+                SOURCE_GLOBAL_REL.as_posix(),
+                "--max-threads",
+                "1",
+            ]
+            completed = subprocess.run(
+                command,
+                check=False,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=90,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            if completed.returncode != 0:
+                details = (completed.stderr or completed.stdout).strip()
+                raise RuntimeError(
+                    "Estrazione della sorgente inglese non riuscita"
+                    + (f": {details}" if details else ".")
+                )
+            extracted = output / SOURCE_GLOBAL_REL
+            if not extracted.is_file():
+                raise FileNotFoundError(
+                    f"La sorgente {SOURCE_GLOBAL_REL.as_posix()} non è presente nel Data.p4k."
+                )
+            digest = sha256_file(extracted)
+            size = extracted.stat().st_size
+        result = {
+            **expected,
+            "available": True,
+            "matches": digest == EXPECTED_SOURCE_SHA256 and size == EXPECTED_SOURCE_BYTES,
+            "sha256": digest,
+            "bytes": size,
+            "error": None,
+        }
+        _SOURCE_CHECK_CACHE.clear()
+        _SOURCE_CHECK_CACHE[cache_key] = result
+        return dict(result)
+    except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
+        return {
+            **expected,
+            "available": False,
+            "matches": False,
+            "sha256": None,
+            "bytes": None,
+            "error": str(exc),
+        }
+
+
+def compatibility_report(info: BuildInfo, game_dir: Path | None = None) -> dict:
+    if (
+        info.branch == SUPPORTED_BRANCH
+        and info.requested_p4_change in VERIFIED_P4_CHANGES
+    ):
+        return {
+            "compatible": True,
+            "reason": "LIVE 4.9 verificata",
+            "method": "verified_change",
+            "source_localization": None,
+        }
+    if game_dir is None:
+        return {
+            "compatible": False,
+            "reason": (
+                f"build {info.branch or 'non identificata'} "
+                f"change {info.requested_p4_change or 'non identificato'} non verificata "
+                "e contenuto del gioco non disponibile"
+            ),
+            "method": "unverified_change",
+            "source_localization": None,
+        }
+    source = inspect_source_localization(game_dir)
+    if source["matches"]:
+        return {
+            "compatible": True,
+            "reason": (
+                "Build compatibile: sorgente inglese invariata "
+                f"({info.branch or 'ramo non identificato'}, "
+                f"change {info.requested_p4_change or 'non identificato'})"
+            ),
+            "method": "source_sha256",
+            "source_localization": source,
+        }
+    if source["available"]:
+        reason = (
+            "la localizzazione inglese della nuova build è cambiata; "
+            "attendi una revisione aggiornata della traduzione"
         )
-    return True, "LIVE 4.9 verificata"
+        method = "source_changed"
+    else:
+        reason = (
+            "impossibile verificare il contenuto della nuova build: "
+            + str(source.get("error") or "errore non identificato")
+        )
+        method = "source_unavailable"
+    return {
+        "compatible": False,
+        "reason": reason,
+        "method": method,
+        "source_localization": source,
+    }
+
+
+def compatibility_status(
+    info: BuildInfo,
+    game_dir: Path | None = None,
+) -> tuple[bool, str]:
+    report = compatibility_report(info, game_dir)
+    return bool(report["compatible"]), str(report["reason"])
 
 
 def decode_text(raw: bytes) -> tuple[str, bool]:
@@ -641,7 +802,9 @@ def install_translation(
             + ", ".join(running)
         )
     info = read_build_info(paths.game_dir)
-    compatible, reason = compatibility_status(info)
+    compatibility = compatibility_report(info, paths.game_dir)
+    compatible = bool(compatibility["compatible"])
+    reason = str(compatibility["reason"])
     if not compatible and not force:
         raise RuntimeError(
             "Questa versione del gioco non è ancora verificata per la traduzione: " + reason
@@ -666,6 +829,7 @@ def install_translation(
         "game_dir": str(paths.game_dir),
         "build": asdict(info),
         "compatibility": reason,
+        "compatibility_check": compatibility,
         "payload": payload,
         "backup": str(backup),
         "state": state,
@@ -729,20 +893,24 @@ def collect_startup_status() -> dict:
         "build": None,
         "compatible": None,
         "compatibility_reason": None,
+        "compatibility_method": None,
+        "source_localization": None,
         "translation": None,
     }
     try:
         game_dir, source = resolve_game_dir_with_source()
         paths = resolve_paths(game_dir)
         info = read_build_info(game_dir)
-        compatible, reason = compatibility_status(info)
+        compatibility = compatibility_report(info, game_dir)
         result.update(
             {
                 "game_dir": game_dir,
                 "path_source": source,
                 "build": info,
-                "compatible": compatible,
-                "compatibility_reason": reason,
+                "compatible": bool(compatibility["compatible"]),
+                "compatibility_reason": str(compatibility["reason"]),
+                "compatibility_method": compatibility["method"],
+                "source_localization": compatibility["source_localization"],
                 "translation": translation_status(paths),
             }
         )
@@ -767,13 +935,13 @@ def print_status_panel(status: dict, colors: bool) -> None:
         print(status.get("compatibility_reason") or "La build installata non è supportata.")
     elif translation.get("matches_current"):
         print(color_text("✓ TRADUZIONE AGGIORNATA", ConsoleColor.BOLD + ConsoleColor.GREEN, colors))
-        print("La Revisione 1 coincide con i file installati.")
+        print(f"La {TRANSLATION_VERSION} coincide con i file installati.")
     elif translation.get("installed"):
         print(color_text("↑ TRADUZIONE DA AGGIORNARE", ConsoleColor.BOLD + ConsoleColor.YELLOW, colors))
         print("È presente una traduzione diversa: verrà salvata prima dell'aggiornamento.")
     else:
         print(color_text("✓ PRONTA PER L'INSTALLAZIONE", ConsoleColor.BOLD + ConsoleColor.GREEN, colors))
-        print("La LIVE 4.9 è compatibile con questa revisione.")
+        print("La build installata è compatibile con questa revisione.")
     print()
     print("Gioco       :", game_dir or "non rilevato")
     if isinstance(info, BuildInfo):
@@ -781,7 +949,7 @@ def print_status_panel(status: dict, colors: bool) -> None:
     else:
         print("Build       :", "non rilevata")
     if translation.get("matches_current"):
-        translation_label = "Revisione 1 installata"
+        translation_label = f"{TRANSLATION_VERSION} installata"
     elif translation.get("installed"):
         translation_label = "altra versione rilevata"
     else:
@@ -801,7 +969,13 @@ def show_technical_status(status: dict) -> None:
         print("Versione interna    :", info.version)
         print("Change              :", info.requested_p4_change)
         print("Data build          :", info.build_date, info.build_time)
-    print("Build supportata    :", SUPPORTED_BRANCH, "change", SUPPORTED_P4_CHANGE)
+    print("Ramo di riferimento :", SUPPORTED_BRANCH)
+    print("Change verificate   :", ", ".join(sorted(VERIFIED_P4_CHANGES)))
+    print("Hash inglese atteso :", EXPECTED_SOURCE_SHA256)
+    source = status.get("source_localization") or {}
+    if source:
+        print("Hash inglese LIVE   :", source.get("sha256") or "non disponibile")
+        print("Contenuto invariato :", "sì" if source.get("matches") else "no")
     print("Righe italiane      :", EXPECTED_ENTRIES)
     print("SHA-256 payload     :", EXPECTED_PAYLOAD_SHA256)
     translation = status.get("translation") or {}
@@ -829,12 +1003,15 @@ def command_check(game_dir: str | None) -> int:
     resolved, _ = resolve_game_dir_with_source(game_dir)
     paths = resolve_paths(resolved)
     info = read_build_info(resolved)
-    compatible, reason = compatibility_status(info)
+    compatibility = compatibility_report(info, resolved)
+    compatible = bool(compatibility["compatible"])
     report = {
         "game_dir": str(resolved),
         "build": asdict(info),
         "compatible": compatible,
-        "reason": reason,
+        "reason": compatibility["reason"],
+        "compatibility_method": compatibility["method"],
+        "source_localization": compatibility["source_localization"],
         "translation": translation_status(paths),
     }
     print(json.dumps(report, ensure_ascii=False, indent=2))
@@ -929,7 +1106,11 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--game-dir")
     install = sub.add_parser("install", help="Installa o aggiorna la traduzione")
     install.add_argument("--game-dir")
-    install.add_argument("--force", action="store_true", help="Ignora il controllo della build")
+    install.add_argument(
+        "--force",
+        action="store_true",
+        help="Ignora il controllo di compatibilità",
+    )
     install.add_argument("--force-open", action="store_true", help="Ignora i processi aperti")
     restore = sub.add_parser("restore", help="Ripristina l'ultimo backup")
     restore.add_argument("--game-dir")
