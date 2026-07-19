@@ -12,7 +12,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 
-EXPECTED_PAYLOAD_SHA256 = "6F482EE99E1692128EEC8F13CFD0F335237789D00E7D75C2147B9CBEC2D19B42"
+EXPECTED_PAYLOAD_SHA256 = "9C8FC68AF677D84FB490852D359BCBF417B39699E61F14EEAEB0699FFD7E5E68"
 TARGET_REL = Path("Data") / "Localization" / "italian_(italy)" / "global.ini"
 
 
@@ -57,7 +57,7 @@ def main() -> int:
             "Data": {
                 "Branch": "sc-alpha-4.9.0",
                 "Version": "4.9.qa",
-                "RequestedP4ChangeNum": "12232306",
+                "RequestedP4ChangeNum": "12248363",
                 "BuildDateStamp": "QA",
                 "BuildTimeStamp": "00:00:00",
             }

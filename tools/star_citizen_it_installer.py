@@ -30,14 +30,14 @@ except Exception:
 
 
 APP_TITLE = "Star Citizen - Traduzione Italiana Non Ufficiale"
-TRANSLATION_VERSION = "4.9-R3"
-RELEASE_TAG = "sc-4.9-r3"
-INSTALLER_FILENAME = "StarCitizen_Traduzione_Italiana_4.9_R3.exe"
+TRANSLATION_VERSION = "4.9-R4"
+RELEASE_TAG = "sc-4.9-r4"
+INSTALLER_FILENAME = "StarCitizen_Traduzione_Italiana_4.9_R4.exe"
 SUPPORTED_BRANCH = "sc-alpha-4.9.0"
-SUPPORTED_P4_CHANGE = "12232306"
-VERIFIED_P4_CHANGES = frozenset({SUPPORTED_P4_CHANGE})
+SUPPORTED_P4_CHANGE = "12248363"
+VERIFIED_P4_CHANGES = frozenset({"12232306", SUPPORTED_P4_CHANGE})
 EXPECTED_ENTRIES = 90121
-EXPECTED_PAYLOAD_SHA256 = "6F482EE99E1692128EEC8F13CFD0F335237789D00E7D75C2147B9CBEC2D19B42"
+EXPECTED_PAYLOAD_SHA256 = "9C8FC68AF677D84FB490852D359BCBF417B39699E61F14EEAEB0699FFD7E5E68"
 EXPECTED_SOURCE_SHA256 = "E5574DF1178A980C4B8CFA1FB812D813B527CBC65BC613631EB0ABBFECBDD1A5"
 EXPECTED_SOURCE_BYTES = 10439724
 STARBREAKER_VERSION = "0.3.2"
@@ -773,17 +773,36 @@ def restore_from_backup(paths: GamePaths, backup: Path, preserve_changes: bool =
     return {"backup": str(backup), "conflicts_saved": conflicts}
 
 
-def latest_backup_for_game(game_dir: Path) -> Path:
-    root = USER_WORK_DIR / "backups"
+def active_backup_for_game(game_dir: Path) -> Path:
+    state = load_installed_state()
     expected = os.path.normcase(str(game_dir.resolve()))
-    if not root.is_dir():
-        raise FileNotFoundError("Non esiste ancora alcun backup da ripristinare.")
-    for backup in sorted((path for path in root.iterdir() if path.is_dir()), reverse=True):
-        manifest = read_json(backup / "backup_manifest.json")
-        recorded = str(manifest.get("game_dir") or "")
-        if recorded and os.path.normcase(recorded) == expected:
-            return backup
-    raise FileNotFoundError("Non esiste un backup associato a questa installazione LIVE.")
+    recorded_game = str(state.get("game_dir") or "")
+    if not recorded_game:
+        raise FileNotFoundError(
+            "Non esiste un'installazione attiva da ripristinare. "
+            "I vecchi backup non verranno applicati automaticamente."
+        )
+    if os.path.normcase(recorded_game) != expected:
+        raise RuntimeError(
+            "Il backup attivo appartiene a un'altra cartella LIVE e non può essere applicato."
+        )
+    recorded_backup = str(state.get("backup") or "")
+    if not recorded_backup:
+        raise FileNotFoundError("Lo stato dell'installazione non indica alcun backup attivo.")
+    backup = Path(recorded_backup).expanduser().resolve()
+    if not backup.is_dir():
+        raise FileNotFoundError("Il backup attivo non è più disponibile.")
+    manifest = read_json(backup / "backup_manifest.json")
+    manifest_game = str(manifest.get("game_dir") or "")
+    if not manifest_game or os.path.normcase(manifest_game) != expected:
+        raise RuntimeError("Il backup attivo non appartiene alla cartella LIVE selezionata.")
+    state_version = str(state.get("translation_version") or "")
+    manifest_version = str(manifest.get("translation_version") or "")
+    if state_version and manifest_version and state_version != manifest_version:
+        raise RuntimeError(
+            "Lo stato dell'installazione e il relativo backup appartengono a revisioni diverse."
+        )
+    return backup
 
 
 def install_translation(
@@ -845,7 +864,7 @@ def restore_translation(game_dir: Path, *, force_open: bool = False) -> dict:
             "Chiudi Star Citizen e RSI Launcher prima del ripristino. Processi aperti: "
             + ", ".join(running)
         )
-    backup = latest_backup_for_game(paths.game_dir)
+    backup = active_backup_for_game(paths.game_dir)
     return restore_from_backup(paths, backup, preserve_changes=True)
 
 
@@ -1054,7 +1073,7 @@ def run_menu() -> int:
             print_status_panel(status, colors)
     print()
     print("1. Installa o aggiorna la traduzione (consigliato)")
-    print("2. Ripristina i file precedenti")
+    print("2. Ripristina i file precedenti (solo backup attivo)")
     print("3. Controlla se esiste una nuova versione")
     print("4. Indica o modifica la cartella LIVE")
     print("5. Crediti, GitHub e sostieni il progetto")
@@ -1065,6 +1084,12 @@ def run_menu() -> int:
     if choice == "0":
         return 0
     if choice == "2":
+        answer = input(
+            "Vuoi davvero ripristinare i file precedenti? [s/N]: "
+        ).strip().casefold()
+        if answer not in {"s", "si", "sì", "y", "yes"}:
+            print("Ripristino annullato.")
+            return 0
         return command_restore(None, False)
     if choice == "3":
         latest = check_latest_release()

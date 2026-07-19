@@ -1,53 +1,78 @@
-# Traduzione italiana Star Citizen 4.9 — Revisione 3
+# Traduzione italiana Star Citizen 4.9 — Revisione 4
 
-Terza revisione pubblica della localizzazione italiana non ufficiale per
+Quarta revisione pubblica della localizzazione italiana non ufficiale per
 Star Citizen.
 
-## Novità della R3
+## Novità della R4
 
-La traduzione non cambia rispetto alla R2: il payload italiano resta completo,
-revisionato e identico. Questa revisione rende invece l'installer più autonomo
-e sicuro dopo gli aggiornamenti del gioco.
+La R4 raccoglie il grande ciclo di verifica visiva svolto direttamente in
+gioco dopo la R3. Il payload differisce su 1.212 chiavi: 1.190 revisioni
+editoriali e 22 normalizzazioni tecniche mirate.
 
-- Non blocca più automaticamente una build soltanto perché il numero di change
-  è nuovo.
-- Estrae esclusivamente il `global.ini` inglese dal `Data.p4k` installato.
-- Confronta dimensione e SHA-256 con la sorgente usata per la traduzione.
-- Se il contenuto è identico, considera compatibile anche una nuova build o una
-  nuova versione del gioco.
-- Se cambia anche una sola parte del file inglese, interrompe l'installazione e
-  richiede una revisione aggiornata.
-- Usa una nuova icona trasparente con badge della bandiera italiana più grande
-  e leggibile.
+- Testi compatti e pulsanti rivisti per evitare troncamenti, sovrapposizioni e
+  ritorni a capo innaturali.
+- Correzioni estese a creazione del personaggio, menu principale, impostazioni,
+  inventario, Gestione flotta, mobiGlas, terminali, chioschi e Arena Commander.
+- Terminologia resa più naturale e coerente, senza tradurre nomi propri,
+  località o riferimenti utili per mappe e guide.
+- Nomi canonici di navi, aziende, avamposti, città, pubblicazioni ed elementi di
+  lore mantenuti nella forma originale.
+- Revisione delle categorie degli incarichi e delle etichette operative.
+- Uniformazione di `Online`, `Offline`, `Equipaggiamento`, `Multitool`,
+  `Hangar`, `Centro Cargo`, `Area di atterraggio` e `Piattaforma di
+  atterraggio`.
 
-Il controllo non carica file del gioco in rete: avviene interamente sul computer
-dell'utente e il file temporaneo viene eliminato al termine.
+## Maiuscole accentate
+
+Il client trasforma dinamicamente in maiuscolo alcune etichette senza
+segnalarlo nel file di localizzazione. La R4 estende la protezione tecnica a
+2.066 chiavi UI confermate.
+
+- Inclusi suggerimenti comandi, frontend, creazione del personaggio, Arena
+  Commander, mobiGlas, terminali medici e avvisi HUD.
+- Riesaminate 79 chiavi condivise fra campi maiuscoli e normali.
+- Nessun caso condiviso lasciato senza decisione.
+- Nessuna forma residua confermata come `MODALITà`, `LOCALITà` o `QUANTITà`.
+- Descrizioni e frasi normali non vengono modificate indiscriminatamente.
+
+## Ripristino più sicuro
+
+L'installer non cerca più semplicemente il backup più recente presente su
+disco. Usa soltanto quello registrato come attivo per la cartella LIVE
+selezionata.
+
+- I backup vecchi non vengono applicati automaticamente.
+- Stati riferiti a un'altra installazione o a una revisione incoerente vengono
+  rifiutati.
+- Dal menu è richiesta una conferma esplicita prima del ripristino.
+- Le impostazioni aggiunte in seguito dall'utente continuano a essere
+  preservate.
 
 ## Installer unico
 
 La release contiene un solo file:
 
 ```text
-StarCitizen_Traduzione_Italiana_4.9_R3.exe
+StarCitizen_Traduzione_Italiana_4.9_R4.exe
 ```
 
-L'installer rileva la cartella del gioco, controlla la sorgente inglese, verifica
-il payload italiano, crea un backup, configura testo italiano e audio inglese e
-offre il ripristino.
+L'installer rileva la cartella del gioco, verifica la sorgente inglese,
+controlla il payload italiano, crea un backup, configura testo italiano e audio
+inglese e verifica nuovamente l'installazione al termine.
 
 ## Compatibilità verificata
 
 - Ramo di riferimento: `sc-alpha-4.9.0`
-- Versione precedente: `4.9.186.42610`, change `12232306`
-- Nuova versione verificata: `4.9.186.58667`, change `12248363`
-- Stringhe inglesi aggiunte, rimosse o modificate: `0`
-- Chiavi: `90.121`
+- Build verificata: `4.9.186.58667`, change `12248363`
+- Chiavi inglesi: `90.121`
+- Stringhe inglesi aggiunte, rimosse o modificate rispetto alla base
+  revisionata: `0`
 - SHA-256 sorgente inglese:
   `E5574DF1178A980C4B8CFA1FB812D813B527CBC65BC613631EB0ABBFECBDD1A5`
 - SHA-256 payload italiano:
-  `6F482EE99E1692128EEC8F13CFD0F335237789D00E7D75C2147B9CBEC2D19B42`
+  `9C8FC68AF677D84FB490852D359BCBF417B39699E61F14EEAEB0699FFD7E5E68`
 - SHA-256 installer:
-  `0EBEA17BAF25400B1715DE3F13ED54BC7533D0927A8C1BBB196173CE33B40390`
+  `509E7438435A482050E9D09CE8272014E8FA16F1507AED6AD84A0B506529E009`
 
 ## Installazione
 

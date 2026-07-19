@@ -1,5 +1,25 @@
 # Registro delle versioni
 
+## 4.9 — Revisione 4
+
+- Aggiornate 1.212 chiavi del payload rispetto alla R3: 1.190 revisioni
+  editoriali e 22 normalizzazioni tecniche confermate visivamente in gioco.
+- Rifiniti naturalezza e lessico di testi non dialogici, descrizioni tecniche,
+  contratti, equipaggiamento, terminali e interfacce.
+- Corretti testi tagliati o sovrapposti in menu, inventario, Gestione flotta,
+  mobiGlas, chioschi, Arena Commander e creazione del personaggio.
+- Uniformate le scelte `Online`, `Offline`, `Equipaggiamento`, `Multitool`,
+  `Hangar`, `Centro Cargo`, `Area di atterraggio` e `Piattaforma di
+  atterraggio`.
+- Estesa la protezione delle maiuscole accentate a 2.066 chiavi UI, comprese le
+  famiglie dinamiche dei suggerimenti comandi, del frontend e dei terminali
+  medici.
+- Reso sicuro il ripristino: l'installer utilizza soltanto il backup attivo,
+  rifiuta stati vecchi o appartenenti a un'altra installazione e richiede una
+  conferma esplicita.
+- Confermata la compatibilità con la build `4.9.186.58667`, change `12248363`,
+  mediante estrazione diretta della sorgente inglese dal `Data.p4k`.
+
 ## 4.9 — Revisione 3
 
 - Reso l'installer compatibile con gli aggiornamenti che non modificano la

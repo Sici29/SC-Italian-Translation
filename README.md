@@ -16,7 +16,7 @@ Windows in un unico file, backup automatico e ripristino.
 Il file da scaricare è:
 
 ```text
-StarCitizen_Traduzione_Italiana_4.9_R3.exe
+StarCitizen_Traduzione_Italiana_4.9_R4.exe
 ```
 
 ### 2. Chiudi gioco e launcher
@@ -66,9 +66,11 @@ l'installer e scegli l'opzione `4`.
 2. Apri nuovamente l'installer.
 3. Digita `2` e premi **Invio**.
 
-Il backup più recente viene ripristinato automaticamente. Se `user.cfg` è stato
-modificato dopo l'installazione, le nuove impostazioni vengono conservate e
-sono rimosse soltanto le righe linguistiche aggiunte dal progetto.
+L'installer chiede una seconda conferma e usa esclusivamente il backup attivo
+registrato durante l'ultima installazione. I vecchi backup non vengono mai
+applicati alla cieca. Se `user.cfg` è stato modificato dopo l'installazione, le
+nuove impostazioni vengono conservate e sono rimosse soltanto le righe
+linguistiche aggiunte dal progetto.
 
 I backup si trovano in:
 
@@ -98,7 +100,7 @@ Scelte come `Hangar`, `Multitool`, `Centro Cargo`, `Area di atterraggio` e
 `Piattaforma di atterraggio` non sono casuali: sono registrate nel glossario e
 applicate in modo coerente.
 
-## Stato della Revisione 3
+## Stato della Revisione 4
 
 - Copertura: **90.121 / 90.121 chiavi**.
 - Stringhe traducibili approvate manualmente: **89.193 / 89.193**.
@@ -108,16 +110,19 @@ applicate in modo coerente.
 - Differenze inglesi fra le due build: **0 aggiunte, 0 rimosse, 0 modificate**.
 - Chiavi mancanti, extra, duplicate o malformate: **0**.
 - Caratteri corrotti o mojibake: **0**.
-- Versione pubblica: **Traduzione italiana Star Citizen 4.9 — Revisione 3**.
-- Correzioni rispetto alla R1: **546 stringhe**; le ultime 280 sono concentrate
-  su inventario, Gestione flotta, mobiGlas, tooltip e maiuscole accentate dei
-  comandi. Le altre rifiniscono creazione del personaggio, menu principale e
-  impostazioni.
-- La R3 non modifica il testo italiano della R2: introduce il controllo
-  contenutistico delle build future e la nuova icona dell'installer.
+- Versione pubblica: **Traduzione italiana Star Citizen 4.9 — Revisione 4**.
+- Differenze del payload rispetto alla R3: **1.212 chiavi aggiornate**,
+  suddivise in 1.190 revisioni editoriali e 22 normalizzazioni tecniche.
+- Revisione concentrata su naturalezza, terminologia, testi compatti,
+  inventario, terminali, contratti, Arena Commander, creazione del personaggio,
+  menu e suggerimenti dei comandi.
+- Protezione delle maiuscole accentate estesa a **2.066 chiavi UI**; altre 79
+  chiavi condivise restano sottoposte a controllo conservativo.
+- Ripristino dell'installer vincolato al backup attivo, con conferma esplicita e
+  rifiuto automatico degli stati vecchi o non associati all'installazione.
 - SHA-256 sorgente inglese: `E5574DF1178A980C4B8CFA1FB812D813B527CBC65BC613631EB0ABBFECBDD1A5`.
-- SHA-256 payload: `6F482EE99E1692128EEC8F13CFD0F335237789D00E7D75C2147B9CBEC2D19B42`.
-- SHA-256 installer: `0EBEA17BAF25400B1715DE3F13ED54BC7533D0927A8C1BBB196173CE33B40390`.
+- SHA-256 payload: `9C8FC68AF677D84FB490852D359BCBF417B39699E61F14EEAEB0699FFD7E5E68`.
+- SHA-256 installer: `509E7438435A482050E9D09CE8272014E8FA16F1507AED6AD84A0B506529E009`.
 
 La base inglese è stata estratta direttamente dalla LIVE installata e confrontata
 byte per byte con quella usata per generare il payload pubblico. Dopo un

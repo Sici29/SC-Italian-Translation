@@ -162,6 +162,56 @@ def test_install_and_restore_existing_files() -> None:
         )
 
 
+def test_restore_refuses_stale_backup_without_active_state() -> None:
+    with TemporaryDirectory() as folder:
+        root = Path(folder)
+        configure_work_dir(root)
+        game = create_fake_game(root)
+        installer.install_translation(game, force_open=True)
+        paths = installer.resolve_paths(game)
+        installed_hash = installer.sha256_file(paths.target_global)
+        installer.STATE_PATH.unlink()
+
+        try:
+            installer.restore_translation(game, force_open=True)
+        except FileNotFoundError as exc:
+            assert "installazione attiva" in str(exc)
+        else:
+            raise AssertionError("Un vecchio backup è stato ripristinato senza stato attivo.")
+
+        assert paths.target_global.is_file()
+        assert installer.sha256_file(paths.target_global) == installed_hash
+        assert paths.user_cfg.is_file()
+
+
+def test_restore_uses_only_recorded_active_backup() -> None:
+    with TemporaryDirectory() as folder:
+        root = Path(folder)
+        configure_work_dir(root)
+        game = create_fake_game(root)
+        report = installer.install_translation(game, force_open=True)
+        active_backup = Path(report["backup"])
+
+        stale = installer.USER_WORK_DIR / "backups" / "99999999-999999-999999"
+        stale.mkdir(parents=True)
+        (stale / "backup_manifest.json").write_text(
+            json.dumps(
+                {
+                    "game_dir": str(game.resolve()),
+                    "translation_version": "0.0-stale",
+                    "original_global_exists": True,
+                    "original_user_cfg_exists": False,
+                }
+            ),
+            encoding="utf-8",
+        )
+        (stale / "original_global.ini").write_bytes(b"stale=wrong\r\n")
+
+        restored = installer.restore_translation(game, force_open=True)
+        assert Path(restored["backup"]) == active_backup
+        assert not installer.resolve_paths(game).target_global.exists()
+
+
 def test_rejects_unverified_build() -> None:
     with TemporaryDirectory() as folder:
         root = Path(folder)
@@ -193,7 +243,7 @@ def test_accepts_new_build_when_source_is_identical() -> None:
     with TemporaryDirectory() as folder:
         root = Path(folder)
         configure_work_dir(root)
-        game = create_fake_game(root, change="12248363")
+        game = create_fake_game(root, change="12299999")
         info = installer.read_build_info(game)
         original_probe = installer.inspect_source_localization
         installer.inspect_source_localization = lambda _game_dir: {
@@ -231,6 +281,8 @@ def main() -> int:
         test_detection_and_build,
         test_install_and_restore_created_files,
         test_install_and_restore_existing_files,
+        test_restore_refuses_stale_backup_without_active_state,
+        test_restore_uses_only_recorded_active_backup,
         test_rejects_unverified_build,
         test_accepts_new_build_when_source_is_identical,
     ]
