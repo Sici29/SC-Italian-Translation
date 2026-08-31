@@ -1,6 +1,6 @@
 # Star Citizen — Traduzione italiana non ufficiale
 
-Localizzazione italiana completa per **Star Citizen LIVE 4.9**, con installer
+Localizzazione italiana completa per **Star Citizen LIVE 4.10**, con installer
 Windows in un unico file, backup automatico e ripristino.
 
 > **Traduzione fan non ufficiale e non commerciale.** Il progetto non è
@@ -16,7 +16,7 @@ Windows in un unico file, backup automatico e ripristino.
 Il file da scaricare è:
 
 ```text
-StarCitizen_Traduzione_Italiana_4.9_R4.exe
+StarCitizen_Traduzione_Italiana_4.10_R1.exe
 ```
 
 ### 2. Chiudi gioco e launcher
@@ -29,12 +29,21 @@ Fai doppio clic sull'EXE e premi **Invio**. L'installer:
 
 - trova automaticamente la cartella `LIVE`;
 - verifica il contenuto della localizzazione inglese installata;
-- controlla l'integrità delle 90.121 stringhe italiane incorporate;
+- controlla l'integrità delle 90.363 stringhe italiane incorporate;
 - crea un backup prima di modificare qualsiasi file;
 - installa la lingua italiana mantenendo l'audio inglese;
-- verifica nuovamente file e configurazione al termine.
+- verifica nuovamente file e configurazione al termine;
+- controlla all'avvio se su GitHub esiste una revisione più recente;
+- se la trova, può scaricarla, verificarne dimensione e SHA-256 e avviarla
+  direttamente, senza aprire il browser.
 
 Non servono Python, archivi da estrarre o modifiche manuali.
+
+> **Passaggio dalla R4 alla 4.10-R1:** la R4 non contiene ancora il sistema di
+> aggiornamento automatico, quindi la 4.10-R1 va scaricata manualmente
+> un'ultima volta. Dalla 4.10-R1 in avanti l'installer potrà rilevare, scaricare
+> e avviare le nuove revisioni, sempre dopo conferma dell'utente e verifica
+> dell'integrità del file.
 
 > **Nota Windows:** l'eseguibile non dispone di una firma digitale commerciale.
 > Al primo avvio Microsoft Defender SmartScreen potrebbe mostrare un avviso.
@@ -83,11 +92,11 @@ Documenti\StarCitizenItalianTranslation\backups
 L'obiettivo non è sostituire parole inglesi una dopo l'altra, ma ricreare in
 italiano tono, atmosfera e intenzione di ogni scena.
 
-- **Revisione manuale stringa per stringa:** 89.193 stringhe traducibili
+- **Revisione manuale stringa per stringa:** 89.437 stringhe traducibili
   approvate, senza traduzione automatica in massa.
 - **Voci riconoscibili:** dialoghi riscritti nel registro del singolo NPC,
   preservando ironia, aggressività, formalità, gergo e ritmo della battuta.
-- **Glossario vincolante:** 4.733 decisioni terminologiche per UI, volo,
+- **Glossario vincolante:** 4.743 decisioni terminologiche per UI, volo,
   equipaggiamento, missioni, organizzazioni e lore.
 - **Compatibilità con mappe e guide:** pianeti, città, avamposti, fazioni,
   modelli, pubblicazioni e nomi utili a orientarsi restano nella forma canonica.
@@ -100,29 +109,33 @@ Scelte come `Hangar`, `Multitool`, `Centro Cargo`, `Area di atterraggio` e
 `Piattaforma di atterraggio` non sono casuali: sono registrate nel glossario e
 applicate in modo coerente.
 
-## Stato della Revisione 4
+## Stato della 4.10-R1
 
-- Copertura: **90.121 / 90.121 chiavi**.
-- Stringhe traducibili approvate manualmente: **89.193 / 89.193**.
-- Stringhe in sospeso: **0**.
-- Build verificate: change **12232306** e change **12248363**.
-- Versione interna più recente verificata: **4.9.186.58667**.
-- Differenze inglesi fra le due build: **0 aggiunte, 0 rimosse, 0 modificate**.
+- Copertura: **90.363 / 90.363 chiavi**.
+- Stringhe traducibili approvate manualmente: **89.437**.
+- Integrazioni manuali prive di sorgente inglese: **636**.
+- Stringhe classificate come non traducibili: **114**.
+- Stringhe intenzionalmente vuote: **176**.
+- Build verificata: **4.10.191.2241**, branch `sc-alpha-4.10.0`, change
+  **12519617**.
+- Delta rispetto alla 4.9: **287 chiavi aggiunte, 45 rimosse, 156 modificate e
+  89.920 invariate**.
+- Tutte le **443 chiavi aggiunte o modificate** presenti nella 4.10 sono state
+  revisionate.
 - Chiavi mancanti, extra, duplicate o malformate: **0**.
 - Caratteri corrotti o mojibake: **0**.
-- Versione pubblica: **Traduzione italiana Star Citizen 4.9 — Revisione 4**.
-- Differenze del payload rispetto alla R3: **1.212 chiavi aggiornate**,
-  suddivise in 1.190 revisioni editoriali e 22 normalizzazioni tecniche.
-- Revisione concentrata su naturalezza, terminologia, testi compatti,
-  inventario, terminali, contratti, Arena Commander, creazione del personaggio,
-  menu e suggerimenti dei comandi.
-- Protezione delle maiuscole accentate estesa a **2.066 chiavi UI**; altre 79
-  chiavi condivise restano sottoposte a controllo conservativo.
+- Versione: **Traduzione italiana Star Citizen 4.10 — Revisione 1**.
+- Novità dell'installer: aggiornamento automatico con download HTTPS dal
+  repository ufficiale, controllo del nome, della dimensione e dell'impronta
+  SHA-256 prima dell'avvio.
+- Protezione delle maiuscole accentate applicata a **2.066 chiavi UI**; altre
+  **79 chiavi condivise** restano sottoposte a controllo conservativo e **22
+  valori** sono stati normalizzati.
 - Ripristino dell'installer vincolato al backup attivo, con conferma esplicita e
   rifiuto automatico degli stati vecchi o non associati all'installazione.
-- SHA-256 sorgente inglese: `E5574DF1178A980C4B8CFA1FB812D813B527CBC65BC613631EB0ABBFECBDD1A5`.
-- SHA-256 payload: `9C8FC68AF677D84FB490852D359BCBF417B39699E61F14EEAEB0699FFD7E5E68`.
-- SHA-256 installer: `509E7438435A482050E9D09CE8272014E8FA16F1507AED6AD84A0B506529E009`.
+- SHA-256 sorgente inglese: `7DF68893F0EC8564D9E123024CF06C6C731DD7ACC36B528C7CAA06104AD74E11`.
+- SHA-256 payload: `96CAB8C9053F2B85D2D2AE2F7A8E231EEE8F993392CF680E36A70ED2C9DFCB08`.
+- SHA-256 installer: `D53244B9284B372D89B361F538B987AD9C54BCAA65A629AC76AD013CD52DB4C5`.
 
 La base inglese è stata estratta direttamente dalla LIVE installata e confrontata
 byte per byte con quella usata per generare il payload pubblico. Dopo un

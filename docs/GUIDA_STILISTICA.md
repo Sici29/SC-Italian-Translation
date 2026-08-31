@@ -61,6 +61,13 @@ decisione esplicita, invece, costituiscono un errore.
 
 - Interfaccia: italiano sintetico, naturale e immediatamente comprensibile.
 - Pulsanti: forma d'azione diretta, per esempio Accetta, Annulla, Conferma.
+- Pulsanti e tab a larghezza fissa: preferire un verbo diretto o un sostantivo
+  breve che conservi integralmente la funzione. Confrontare sempre l'ingombro
+  con l'inglese e sottoporre a revisione manuale le rese molto più lunghe; non
+  abbreviare automaticamente e non sacrificare chiarezza o terminologia
+  canonica. Sigle e nomi ufficiali già approvati, come HUD, FOIP o Drone Sim,
+  possono essere conservati quando migliorano leggibilità e compatibilità con
+  guide e veterani.
 - Obiettivi: infinito presente, per esempio Raggiungere o Recuperare.
 - Istruzioni: seconda persona singolare sottintesa, senza formule burocratiche.
 - Comunicazioni diegetiche: tono coerente con mittente, fazione e situazione.
@@ -71,6 +78,11 @@ decisione esplicita, invece, costituiscono un errore.
 
 - Usare la maiuscola solo dove richiesta dall'italiano; evitare il maiuscolo
   sistematico dei titoli inglesi.
+- La conversione `_forceCase=upper` dell'interfaccia non gestisce sempre le
+  lettere accentate. La build usa quindi il manifest ricavato dai contenitori
+  SWF/GFX e converte automaticamente `à`, `è`, `é`, `ì`, `ò` e `ù` soltanto
+  nelle chiavi legate a campi maiuscoli. Le chiavi condivise con campi normali
+  bloccano la build e richiedono una decisione editoriale esplicita.
 - Conservare numeri, unità, simboli e spazi funzionali.
 - Usare esclusivamente apostrofo e virgolette ASCII (`'` e `"`). Non usare
   caporali o virgolette tipografiche, per evitare caratteri non supportati dal

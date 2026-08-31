@@ -1,5 +1,31 @@
 # Registro delle versioni
 
+## 4.10 — Revisione 1
+
+- Aggiornata la localizzazione alla LIVE `4.10`, build `4.10.191.2241`, branch
+  `sc-alpha-4.10.0`, change `12519617`, tramite estrazione diretta del
+  `global.ini` inglese dal `Data.p4k`.
+- Portata la copertura a **90.363 chiavi**: 89.437 approvate manualmente, 636
+  integrazioni manuali prive di sorgente inglese, 114 non traducibili e 176
+  intenzionalmente vuote.
+- Rispetto alla 4.9: **287 chiavi aggiunte, 45 rimosse, 156 modificate e 89.920
+  invariate**. Tutte le **443 chiavi aggiunte o modificate** sono state
+  revisionate.
+- Consolidato il glossario vincolante a **4.743 voci**.
+- Confermate **2.066 chiavi UI protette**, riesaminate 79 chiavi condivise e
+  normalizzati 22 valori con maiuscole accentate.
+- Aggiunto il controllo automatico delle nuove release GitHub all'avvio
+  dell'installer, con conferma dell'utente, download HTTPS e verifica di nome,
+  dimensione e impronta SHA-256 prima dell'avvio.
+- I file già scaricati vengono riutilizzati solo se superano nuovamente tutti i
+  controlli; download incompleti o alterati vengono rifiutati.
+- Il passaggio dalla R4 alla 4.10-R1 richiede un ultimo download manuale;
+  l'aggiornamento integrato sarà disponibile dalla 4.10-R1 in avanti.
+- SHA-256 sorgente inglese:
+  `7DF68893F0EC8564D9E123024CF06C6C731DD7ACC36B528C7CAA06104AD74E11`.
+- SHA-256 payload italiano:
+  `96CAB8C9053F2B85D2D2AE2F7A8E231EEE8F993392CF680E36A70ED2C9DFCB08`.
+
 ## 4.9 — Revisione 4
 
 - Aggiornate 1.212 chiavi del payload rispetto alla R3: 1.190 revisioni

@@ -16,6 +16,7 @@ import sys
 import tempfile
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import webbrowser
 from dataclasses import asdict, dataclass
@@ -30,16 +31,16 @@ except Exception:
 
 
 APP_TITLE = "Star Citizen - Traduzione Italiana Non Ufficiale"
-TRANSLATION_VERSION = "4.9-R4"
-RELEASE_TAG = "sc-4.9-r4"
-INSTALLER_FILENAME = "StarCitizen_Traduzione_Italiana_4.9_R4.exe"
-SUPPORTED_BRANCH = "sc-alpha-4.9.0"
-SUPPORTED_P4_CHANGE = "12248363"
-VERIFIED_P4_CHANGES = frozenset({"12232306", SUPPORTED_P4_CHANGE})
-EXPECTED_ENTRIES = 90121
-EXPECTED_PAYLOAD_SHA256 = "9C8FC68AF677D84FB490852D359BCBF417B39699E61F14EEAEB0699FFD7E5E68"
-EXPECTED_SOURCE_SHA256 = "E5574DF1178A980C4B8CFA1FB812D813B527CBC65BC613631EB0ABBFECBDD1A5"
-EXPECTED_SOURCE_BYTES = 10439724
+TRANSLATION_VERSION = "4.10-R1"
+RELEASE_TAG = "sc-4.10-r1"
+INSTALLER_FILENAME = "StarCitizen_Traduzione_Italiana_4.10_R1.exe"
+SUPPORTED_BRANCH = "sc-alpha-4.10.0"
+SUPPORTED_P4_CHANGE = "12519617"
+VERIFIED_P4_CHANGES = frozenset({SUPPORTED_P4_CHANGE})
+EXPECTED_ENTRIES = 90363
+EXPECTED_PAYLOAD_SHA256 = "96CAB8C9053F2B85D2D2AE2F7A8E231EEE8F993392CF680E36A70ED2C9DFCB08"
+EXPECTED_SOURCE_SHA256 = "7DF68893F0EC8564D9E123024CF06C6C731DD7ACC36B528C7CAA06104AD74E11"
+EXPECTED_SOURCE_BYTES = 10476385
 STARBREAKER_VERSION = "0.3.2"
 
 GITHUB_PROJECT_URL = "https://github.com/Sici29/SC-Italian-Translation"
@@ -48,6 +49,9 @@ GITHUB_ISSUES_URL = GITHUB_PROJECT_URL + "/issues"
 GITHUB_API_LATEST = (
     "https://api.github.com/repos/Sici29/SC-Italian-Translation/releases/latest"
 )
+GITHUB_API_VERSION = "2022-11-28"
+MAX_UPDATE_BYTES = 250 * 1024 * 1024
+UPDATE_LAUNCHED_STATUS = 75
 
 TARGET_GLOBAL_REL = Path("Data") / "Localization" / "italian_(italy)" / "global.ini"
 SOURCE_GLOBAL_REL = Path("Data") / "Localization" / "english" / "global.ini"
@@ -467,7 +471,7 @@ def compatibility_report(info: BuildInfo, game_dir: Path | None = None) -> dict:
     ):
         return {
             "compatible": True,
-            "reason": "LIVE 4.9 verificata",
+            "reason": "LIVE 4.10 verificata",
             "method": "verified_change",
             "source_localization": None,
         }
@@ -868,24 +872,247 @@ def restore_translation(game_dir: Path, *, force_open: bool = False) -> dict:
     return restore_from_backup(paths, backup, preserve_changes=True)
 
 
+def release_version_key(tag: str) -> tuple[int, int, int] | None:
+    match = re.fullmatch(r"sc-(\d+)\.(\d+)-r(\d+)", tag.strip(), re.IGNORECASE)
+    if not match:
+        return None
+    return tuple(int(part) for part in match.groups())
+
+
+def select_installer_asset(release: dict) -> dict:
+    assets = release.get("assets")
+    if not isinstance(assets, list):
+        raise RuntimeError("La release non contiene l'elenco dei file.")
+    tag = str(release.get("tag_name") or "").strip()
+    version = release_version_key(tag)
+    if version is None:
+        raise RuntimeError("La release usa un formato di versione non riconosciuto.")
+    major, minor, revision = version
+    expected_name = (
+        f"StarCitizen_Traduzione_Italiana_{major}.{minor}_R{revision}.exe"
+    )
+    matches = []
+    for asset in assets:
+        if not isinstance(asset, dict):
+            continue
+        name = str(asset.get("name") or "").strip()
+        if (
+            asset.get("state") == "uploaded"
+            and name.casefold() == expected_name.casefold()
+        ):
+            matches.append(asset)
+    if len(matches) != 1:
+        raise RuntimeError(
+            "La release deve contenere un solo installer Windows riconoscibile."
+        )
+
+    asset = matches[0]
+    name = str(asset["name"]).strip()
+    url = str(asset.get("browser_download_url") or "").strip()
+    parsed = urllib.parse.urlparse(url)
+    expected_path = (
+        f"/Sici29/SC-Italian-Translation/releases/download/{tag}/{expected_name}"
+    )
+    if (
+        parsed.scheme.casefold() != "https"
+        or parsed.hostname is None
+        or parsed.hostname.casefold() != "github.com"
+        or parsed.path.casefold() != expected_path.casefold()
+    ):
+        raise RuntimeError("Il collegamento dell'installer non appartiene al progetto GitHub.")
+
+    size = asset.get("size")
+    if not isinstance(size, int) or isinstance(size, bool) or not (0 < size <= MAX_UPDATE_BYTES):
+        raise RuntimeError("La dimensione dichiarata dell'installer non è valida.")
+
+    digest = str(asset.get("digest") or "").strip()
+    digest_match = re.fullmatch(r"sha256:([0-9a-fA-F]{64})", digest)
+    if not digest_match:
+        raise RuntimeError(
+            "GitHub non ha fornito l'impronta SHA-256 dell'installer: "
+            "l'aggiornamento automatico è stato bloccato."
+        )
+    return {
+        "name": name,
+        "url": url,
+        "size": size,
+        "sha256": digest_match.group(1).upper(),
+    }
+
+
 def check_latest_release(timeout: float = 4.0) -> dict:
     request = urllib.request.Request(
         GITHUB_API_LATEST,
-        headers={"Accept": "application/vnd.github+json", "User-Agent": INSTALLER_FILENAME},
+        headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": INSTALLER_FILENAME,
+            "X-GitHub-Api-Version": GITHUB_API_VERSION,
+        },
     )
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             release = json.loads(response.read().decode("utf-8"))
-    except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
+    except (OSError, urllib.error.URLError, UnicodeError, json.JSONDecodeError) as exc:
         return {"available": None, "error": str(exc), "current": RELEASE_TAG}
+    if not isinstance(release, dict) or release.get("draft") or release.get("prerelease"):
+        return {
+            "available": None,
+            "error": "La risposta di GitHub non descrive una release pubblica stabile.",
+            "current": RELEASE_TAG,
+        }
     latest = str(release.get("tag_name") or "").strip()
-    available = bool(latest and latest.casefold() != RELEASE_TAG.casefold())
-    return {
+    current_key = release_version_key(RELEASE_TAG)
+    latest_key = release_version_key(latest)
+    if current_key is None or latest_key is None:
+        return {
+            "available": None,
+            "error": "La versione pubblicata usa un formato non riconosciuto.",
+            "current": RELEASE_TAG,
+            "latest": latest or None,
+        }
+    available = latest_key > current_key
+    result = {
         "available": available,
         "current": RELEASE_TAG,
         "latest": latest or None,
         "url": str(release.get("html_url") or GITHUB_RELEASES_URL),
     }
+    if available:
+        try:
+            result["asset"] = select_installer_asset(release)
+            result["download_ready"] = True
+        except RuntimeError as exc:
+            result["download_ready"] = False
+            result["download_error"] = str(exc)
+    return result
+
+
+def download_release_installer(latest: dict, timeout: float = 90.0) -> dict:
+    if latest.get("available") is not True or latest.get("download_ready") is not True:
+        raise RuntimeError(
+            str(latest.get("download_error") or "Nessun aggiornamento verificato disponibile.")
+        )
+    asset = latest.get("asset")
+    if not isinstance(asset, dict):
+        raise RuntimeError("Metadati dell'aggiornamento non validi.")
+
+    name = str(asset["name"])
+    expected_size = int(asset["size"])
+    expected_sha256 = str(asset["sha256"]).upper()
+    tag = str(latest.get("latest") or "nuova-versione")
+    safe_tag = re.sub(r"[^A-Za-z0-9._-]+", "_", tag)
+    target_dir = USER_WORK_DIR / "updates" / safe_tag
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target = target_dir / name
+    if (
+        target.is_file()
+        and target.stat().st_size == expected_size
+        and sha256_file(target) == expected_sha256
+    ):
+        return {
+            "path": str(target),
+            "size": expected_size,
+            "sha256": expected_sha256,
+            "reused": True,
+        }
+
+    temporary = target.with_name(f".{target.name}.{os.getpid()}.part")
+    request = urllib.request.Request(
+        str(asset["url"]),
+        headers={
+            "Accept": "application/octet-stream",
+            "User-Agent": INSTALLER_FILENAME,
+        },
+    )
+    digest = hashlib.sha256()
+    received = 0
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            with temporary.open("wb") as stream:
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    received += len(chunk)
+                    if received > expected_size or received > MAX_UPDATE_BYTES:
+                        raise RuntimeError(
+                            "Il download supera la dimensione dichiarata da GitHub."
+                        )
+                    stream.write(chunk)
+                    digest.update(chunk)
+                stream.flush()
+                os.fsync(stream.fileno())
+        actual_sha256 = digest.hexdigest().upper()
+        if received != expected_size:
+            raise RuntimeError(
+                f"Download incompleto: {received} byte ricevuti, {expected_size} previsti."
+            )
+        if actual_sha256 != expected_sha256:
+            raise RuntimeError(
+                "L'impronta SHA-256 del file scaricato non coincide con quella di GitHub."
+            )
+        os.replace(temporary, target)
+    finally:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError:
+            pass
+    return {
+        "path": str(target),
+        "size": received,
+        "sha256": expected_sha256,
+        "reused": False,
+    }
+
+
+def launch_installer_update(download: dict) -> None:
+    path = Path(str(download.get("path") or "")).resolve()
+    updates_root = (USER_WORK_DIR / "updates").resolve()
+    try:
+        path.relative_to(updates_root)
+    except ValueError as exc:
+        raise RuntimeError("Il file aggiornato si trova fuori dalla cartella sicura.") from exc
+    expected_sha256 = str(download.get("sha256") or "").upper()
+    if (
+        path.suffix.casefold() != ".exe"
+        or not path.is_file()
+        or not re.fullmatch(r"[0-9A-F]{64}", expected_sha256)
+        or sha256_file(path) != expected_sha256
+    ):
+        raise RuntimeError("L'installer aggiornato non supera la verifica finale.")
+    release_installer_instance_lock()
+    subprocess.Popen([str(path)], cwd=str(path.parent), close_fds=True)
+
+
+def run_update_flow(latest: dict | None = None, *, ask: bool = True) -> bool:
+    latest = latest or check_latest_release()
+    if latest.get("available") is False:
+        print("Hai già la versione più recente.")
+        return False
+    if latest.get("available") is not True:
+        print("Controllo online non disponibile. Riprova più tardi.")
+        if latest.get("error"):
+            print("Dettaglio:", latest["error"])
+        return False
+
+    print("Nuova versione disponibile:", latest.get("latest"))
+    if latest.get("download_ready") is not True:
+        print("Aggiornamento automatico bloccato:", latest.get("download_error"))
+        print("Pagina release:", latest.get("url") or GITHUB_RELEASES_URL)
+        return False
+    if ask:
+        answer = input("Vuoi scaricarla, verificarla e avviarla ora? [S/n]: ").strip().casefold()
+        if answer not in {"", "s", "si", "sì", "y", "yes"}:
+            print("Aggiornamento rimandato.")
+            return False
+
+    print("Scaricamento sicuro dell'installer in corso...")
+    download = download_release_installer(latest)
+    print("Download verificato.")
+    print("SHA-256:", download["sha256"])
+    launch_installer_update(download)
+    print("Avvio della nuova versione...")
+    return True
 
 
 def acquire_installer_instance_lock() -> bool:
@@ -903,6 +1130,30 @@ def acquire_installer_instance_lock() -> bool:
         return not already_exists
     except Exception:
         return True
+
+
+def release_installer_instance_lock() -> None:
+    global _INSTANCE_MUTEX
+    handle = _INSTANCE_MUTEX
+    if not handle:
+        return
+    if os.name != "nt":
+        _INSTANCE_MUTEX = None
+        return
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        close_handle = ctypes.windll.kernel32.CloseHandle
+        close_handle.argtypes = [wintypes.HANDLE]
+        close_handle.restype = wintypes.BOOL
+        if not close_handle(handle):
+            raise ctypes.WinError()
+    except Exception as exc:
+        raise RuntimeError(
+            "Impossibile chiudere in sicurezza la vecchia istanza dell'installer."
+        ) from exc
+    _INSTANCE_MUTEX = None
 
 
 def collect_startup_status() -> dict:
@@ -1064,6 +1315,18 @@ def run_menu() -> int:
     colors = enable_console_colors()
     status = collect_startup_status()
     print_status_panel(status, colors)
+    latest = check_latest_release()
+    if latest.get("available") is True:
+        print()
+        print(
+            color_text(
+                f"↑ NUOVO INSTALLER DISPONIBILE: {latest.get('latest')}",
+                ConsoleColor.BOLD + ConsoleColor.YELLOW,
+                colors,
+            )
+        )
+        if run_update_flow(latest, ask=True):
+            return UPDATE_LAUNCHED_STATUS
     if not status.get("game_dir"):
         print()
         answer = input("Vuoi selezionare adesso la cartella LIVE? [S/n]: ").strip().casefold()
@@ -1092,16 +1355,8 @@ def run_menu() -> int:
             return 0
         return command_restore(None, False)
     if choice == "3":
-        latest = check_latest_release()
-        if latest.get("available") is True:
-            print("Nuova versione disponibile:", latest.get("latest"))
-            answer = input("Vuoi aprire la pagina delle release? [S/n]: ").strip().casefold()
-            if answer in {"", "s", "si", "sì", "y", "yes"}:
-                webbrowser.open(str(latest.get("url") or GITHUB_RELEASES_URL))
-        elif latest.get("available") is False:
-            print("Hai già la versione più recente.")
-        else:
-            print("Controllo online non disponibile. Riprova più tardi.")
+        if run_update_flow(ask=True):
+            return UPDATE_LAUNCHED_STATUS
         return 0
     if choice == "4":
         return run_menu() if configure_game_dir() else 1
@@ -1140,6 +1395,7 @@ def build_parser() -> argparse.ArgumentParser:
     restore = sub.add_parser("restore", help="Ripristina l'ultimo backup")
     restore.add_argument("--game-dir")
     restore.add_argument("--force-open", action="store_true", help="Ignora i processi aperti")
+    sub.add_parser("update", help="Scarica e avvia l'ultima versione verificata")
     sub.add_parser("version", help="Mostra la versione dell'installer")
     return parser
 
@@ -1156,6 +1412,8 @@ def main() -> int:
         except Exception as exc:
             print("Errore:", exc)
             code = 1
+        if code == UPDATE_LAUNCHED_STATUS:
+            return 0
         pause_if_needed(True)
         return code
 
@@ -1167,6 +1425,8 @@ def main() -> int:
             return command_install(args.game_dir, args.force, args.force_open)
         if args.command == "restore":
             return command_restore(args.game_dir, args.force_open)
+        if args.command == "update":
+            return 0 if run_update_flow(ask=False) else 2
         if args.command == "version":
             print(TRANSLATION_VERSION, RELEASE_TAG)
             return 0

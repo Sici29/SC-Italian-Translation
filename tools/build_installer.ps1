@@ -10,7 +10,7 @@ $VersionInfo = Join-Path $PSScriptRoot "version_info.txt"
 $Icon = Join-Path $RepoRoot "assets\icon\star_citizen_installer_italia.ico"
 $StarBreaker = Join-Path $PSScriptRoot "vendor\starbreaker\0.3.2\starbreaker.exe"
 $StarBreakerNotice = Join-Path $PSScriptRoot "vendor\starbreaker\0.3.2\NOTICE.md"
-$Build = Join-Path $RepoRoot "build\r4"
+$Build = Join-Path $RepoRoot "build\4.10-r1"
 $Work = Join-Path $Build "work"
 $Spec = Join-Path $Build "spec"
 $Dist = Join-Path $Build "dist"
@@ -30,7 +30,7 @@ if (-not (Test-Path -LiteralPath $StarBreaker)) {
     --clean `
     --onefile `
     --console `
-    --name "StarCitizen_Traduzione_Italiana_4.9_R4" `
+    --name "StarCitizen_Traduzione_Italiana_4.10_R1" `
     --icon $Icon `
     --version-file $VersionInfo `
     --add-data "$Payload;payload" `
@@ -45,7 +45,7 @@ if ($LASTEXITCODE -ne 0) {
     throw "Creazione installer non riuscita."
 }
 
-$Exe = Join-Path $Dist "StarCitizen_Traduzione_Italiana_4.9_R4.exe"
+$Exe = Join-Path $Dist "StarCitizen_Traduzione_Italiana_4.10_R1.exe"
 if (-not (Test-Path -LiteralPath $Exe)) {
     throw "L'eseguibile finale non è stato creato."
 }

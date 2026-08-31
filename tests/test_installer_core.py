@@ -38,7 +38,7 @@ def create_fake_game(root: Path, change: str = installer.SUPPORTED_P4_CHANGE) ->
     manifest = {
         "Data": {
             "Branch": installer.SUPPORTED_BRANCH,
-            "Version": "4.9.test",
+            "Version": "4.10.test",
             "RequestedP4ChangeNum": change,
             "BuildDateStamp": "Test Day",
             "BuildTimeStamp": "12:00:00",
@@ -48,6 +48,49 @@ def create_fake_game(root: Path, change: str = installer.SUPPORTED_P4_CHANGE) ->
         json.dumps(manifest), encoding="utf-8"
     )
     return game
+
+
+class FakeResponse:
+    def __init__(self, data: bytes):
+        self.data = data
+        self.offset = 0
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _exc_type, _exc, _traceback):
+        return False
+
+    def read(self, size: int = -1) -> bytes:
+        if size < 0:
+            size = len(self.data) - self.offset
+        chunk = self.data[self.offset : self.offset + size]
+        self.offset += len(chunk)
+        return chunk
+
+
+def fake_release(payload: bytes, *, digest_payload: bytes | None = None) -> dict:
+    digest_payload = payload if digest_payload is None else digest_payload
+    return {
+        "tag_name": "sc-4.10-r2",
+        "html_url": (
+            "https://github.com/Sici29/SC-Italian-Translation/releases/tag/sc-4.10-r2"
+        ),
+        "draft": False,
+        "prerelease": False,
+        "assets": [
+            {
+                "name": "StarCitizen_Traduzione_Italiana_4.10_R2.exe",
+                "state": "uploaded",
+                "size": len(payload),
+                "digest": "sha256:" + installer.sha256_bytes(digest_payload).lower(),
+                "browser_download_url": (
+                    "https://github.com/Sici29/SC-Italian-Translation/releases/"
+                    "download/sc-4.10-r2/StarCitizen_Traduzione_Italiana_4.10_R2.exe"
+                ),
+            }
+        ],
+    }
 
 
 def test_payload() -> None:
@@ -92,7 +135,7 @@ def test_detection_and_build() -> None:
         assert installer.looks_like_game_dir(game)
         assert installer.normalize_selected_game_dir(game.parent) == game.resolve()
         info = installer.read_build_info(game)
-        assert installer.compatibility_status(info) == (True, "LIVE 4.9 verificata")
+        assert installer.compatibility_status(info) == (True, "LIVE 4.10 verificata")
 
         old_env = os.environ.get("STAR_CITIZEN_LIVE")
         os.environ["STAR_CITIZEN_LIVE"] = str(game)
@@ -243,7 +286,7 @@ def test_accepts_new_build_when_source_is_identical() -> None:
     with TemporaryDirectory() as folder:
         root = Path(folder)
         configure_work_dir(root)
-        game = create_fake_game(root, change="12299999")
+        game = create_fake_game(root, change="12599999")
         info = installer.read_build_info(game)
         original_probe = installer.inspect_source_localization
         installer.inspect_source_localization = lambda _game_dir: {
@@ -260,7 +303,7 @@ def test_accepts_new_build_when_source_is_identical() -> None:
             assert "sorgente inglese invariata" in report["reason"]
 
             manifest = json.loads((game / installer.BUILD_MANIFEST_NAME).read_text())
-            manifest["Data"]["Branch"] = "sc-alpha-4.10.0"
+            manifest["Data"]["Branch"] = "sc-alpha-4.11.0"
             (game / installer.BUILD_MANIFEST_NAME).write_text(
                 json.dumps(manifest), encoding="utf-8"
             )
@@ -274,6 +317,176 @@ def test_accepts_new_build_when_source_is_identical() -> None:
             installer.inspect_source_localization = original_probe
 
 
+def test_release_update_metadata() -> None:
+    payload = b"MZ-test-installer"
+    release = fake_release(payload)
+    original_urlopen = installer.urllib.request.urlopen
+    installer.urllib.request.urlopen = lambda _request, timeout=0: FakeResponse(
+        json.dumps(release).encode("utf-8")
+    )
+    try:
+        latest = installer.check_latest_release()
+    finally:
+        installer.urllib.request.urlopen = original_urlopen
+
+    assert installer.release_version_key("sc-4.10-r1") == (4, 10, 1)
+    assert installer.release_version_key("sc-4.11-r1") == (4, 11, 1)
+    assert installer.release_version_key("sc-4.11-r1") > installer.release_version_key(
+        installer.RELEASE_TAG
+    )
+    assert installer.release_version_key("formato-ignoto") is None
+    assert latest["available"] is True
+    assert latest["download_ready"] is True
+    assert latest["latest"] == "sc-4.10-r2"
+    assert latest["asset"]["size"] == len(payload)
+    assert latest["asset"]["sha256"] == installer.sha256_bytes(payload)
+
+
+def test_release_update_handles_invalid_utf8() -> None:
+    original_urlopen = installer.urllib.request.urlopen
+    installer.urllib.request.urlopen = lambda _request, timeout=0: FakeResponse(b"\xff")
+    try:
+        latest = installer.check_latest_release()
+    finally:
+        installer.urllib.request.urlopen = original_urlopen
+
+    assert latest["available"] is None
+    assert latest["current"] == installer.RELEASE_TAG
+    assert latest["error"]
+
+
+def test_release_asset_identity_is_strict() -> None:
+    release = fake_release(b"MZ-test-installer")
+    release["assets"][0]["name"] = "StarCitizen_Traduzione_Italiana_4.10_R1.exe"
+    try:
+        installer.select_installer_asset(release)
+    except RuntimeError as exc:
+        assert "un solo installer" in str(exc)
+    else:
+        raise AssertionError("È stato accettato un nome EXE incoerente con il tag.")
+
+    release = fake_release(b"MZ-test-installer")
+    release["assets"][0]["browser_download_url"] = (
+        "https://github.com/Sici29/SC-Italian-Translation/releases/download/"
+        "sc-4.10-r3/StarCitizen_Traduzione_Italiana_4.10_R2.exe"
+    )
+    try:
+        installer.select_installer_asset(release)
+    except RuntimeError as exc:
+        assert "non appartiene" in str(exc)
+    else:
+        raise AssertionError("È stato accettato un URL incoerente con il tag.")
+
+    release = fake_release(b"MZ-test-installer")
+    release["assets"][0]["browser_download_url"] = (
+        "https://github.com/Sici29/SC-Italian-Translation/releases/download/"
+        "sc-4.10-r2/installer_diverso.exe"
+    )
+    try:
+        installer.select_installer_asset(release)
+    except RuntimeError as exc:
+        assert "non appartiene" in str(exc)
+    else:
+        raise AssertionError("È stato accettato un URL con nome file incoerente.")
+
+
+def test_download_update_verifies_and_reuses_file() -> None:
+    with TemporaryDirectory() as folder:
+        root = Path(folder)
+        configure_work_dir(root)
+        payload = b"MZ-test-installer"
+        release = fake_release(payload)
+        latest = {
+            "available": True,
+            "download_ready": True,
+            "latest": release["tag_name"],
+            "asset": installer.select_installer_asset(release),
+        }
+        original_urlopen = installer.urllib.request.urlopen
+        installer.urllib.request.urlopen = lambda _request, timeout=0: FakeResponse(payload)
+        try:
+            downloaded = installer.download_release_installer(latest)
+            reused = installer.download_release_installer(latest)
+        finally:
+            installer.urllib.request.urlopen = original_urlopen
+
+        path = Path(downloaded["path"])
+        assert path.read_bytes() == payload
+        assert downloaded["sha256"] == installer.sha256_bytes(payload)
+        assert downloaded["reused"] is False
+        assert reused["reused"] is True
+        assert reused["path"] == downloaded["path"]
+
+
+def test_download_update_rejects_wrong_digest() -> None:
+    with TemporaryDirectory() as folder:
+        root = Path(folder)
+        configure_work_dir(root)
+        expected = b"MZ-new"
+        received = b"MZ-bad"
+        release = fake_release(received, digest_payload=expected)
+        latest = {
+            "available": True,
+            "download_ready": True,
+            "latest": release["tag_name"],
+            "asset": installer.select_installer_asset(release),
+        }
+        original_urlopen = installer.urllib.request.urlopen
+        installer.urllib.request.urlopen = lambda _request, timeout=0: FakeResponse(received)
+        try:
+            try:
+                installer.download_release_installer(latest)
+            except RuntimeError as exc:
+                assert "SHA-256" in str(exc)
+            else:
+                raise AssertionError("È stato accettato un installer con hash errato.")
+        finally:
+            installer.urllib.request.urlopen = original_urlopen
+
+        assert not list(installer.USER_WORK_DIR.rglob("*.exe"))
+        assert not list(installer.USER_WORK_DIR.rglob("*.part"))
+
+
+def test_launch_update_uses_verified_file() -> None:
+    with TemporaryDirectory() as folder:
+        root = Path(folder)
+        configure_work_dir(root)
+        update_dir = installer.USER_WORK_DIR / "updates" / "sc-4.10-r2"
+        update_dir.mkdir(parents=True)
+        path = update_dir / "StarCitizen_Traduzione_Italiana_4.10_R2.exe"
+        payload = b"MZ-test-installer"
+        path.write_bytes(payload)
+        calls = []
+        events = []
+        original_popen = installer.subprocess.Popen
+        original_release_lock = installer.release_installer_instance_lock
+
+        def fake_release_lock() -> None:
+            events.append("release")
+
+        def fake_popen(*args, **kwargs):
+            events.append("popen")
+            calls.append((args, kwargs))
+
+        installer.release_installer_instance_lock = fake_release_lock
+        installer.subprocess.Popen = fake_popen
+        try:
+            installer.launch_installer_update(
+                {
+                    "path": str(path),
+                    "sha256": installer.sha256_bytes(payload),
+                }
+            )
+        finally:
+            installer.subprocess.Popen = original_popen
+            installer.release_installer_instance_lock = original_release_lock
+
+        assert events == ["release", "popen"]
+        assert calls
+        assert calls[0][0][0] == [str(path.resolve())]
+        assert calls[0][1]["cwd"] == str(path.parent.resolve())
+
+
 def main() -> int:
     tests = [
         test_payload,
@@ -285,6 +498,12 @@ def main() -> int:
         test_restore_uses_only_recorded_active_backup,
         test_rejects_unverified_build,
         test_accepts_new_build_when_source_is_identical,
+        test_release_update_metadata,
+        test_release_update_handles_invalid_utf8,
+        test_release_asset_identity_is_strict,
+        test_download_update_verifies_and_reuses_file,
+        test_download_update_rejects_wrong_digest,
+        test_launch_update_uses_verified_file,
     ]
     for test in tests:
         test()

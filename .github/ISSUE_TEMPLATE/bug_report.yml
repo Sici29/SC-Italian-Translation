@@ -13,7 +13,7 @@ body:
         - Termine rimasto in inglese
         - Maiuscole, genere o concordanza
         - Testo tagliato o interfaccia
-        - Installer o ripristino
+        - Installer, aggiornamento o ripristino
         - Compatibilità dopo un aggiornamento
     validations:
       required: true
@@ -21,9 +21,15 @@ body:
     id: build
     attributes:
       label: Versione del gioco
-      placeholder: "Esempio: LIVE 4.9, change 12232306"
+      placeholder: "Esempio: LIVE 4.10, change 12519617"
     validations:
       required: true
+  - type: input
+    id: installer_version
+    attributes:
+      label: Versione dell'installer
+      description: Compila questo campo per problemi di installazione, aggiornamento o ripristino.
+      placeholder: "Esempio: 4.10-R1"
   - type: textarea
     id: location
     attributes:
