@@ -1,5 +1,31 @@
 # Registro delle versioni
 
+## 4.10 — Revisione 2
+
+- Aggiornata la localizzazione alla LIVE `4.10`, build `4.10.193.11644`, branch
+  `sc-alpha-4.10.0`, change `12660092` (aggiornamento del 17/09/2026).
+- Portata la copertura a **90.437 chiavi**: 89.511 approvate manualmente, 636
+  integrazioni manuali prive di sorgente inglese, 114 non traducibili e 176
+  intenzionalmente vuote (**100,00% di copertura manuale umana**).
+- Rispetto alla 4.10-R1: **83 chiavi aggiunte, 9 rimosse, 4 modificate e 90.350
+  invariate**. Tutte le **87 chiavi aggiunte o modificate** sono state tradotte
+  e revisionate professionalmente in 4 lotti dedicati.
+- Nuovi contenuti tradotti: ricompense e distintivi Orison Relief (Tier 1-6),
+  processi di raffinazione dettagliati (confronti resa/tempo/costo), nuovi veicoli
+  ed equipaggiamenti (Sabre Raven EX, ATLS IKTI Akuma, verniciature esclusive, armi
+  e armature), revisione missioni di costruzione e ascensori Orison.
+- Architettura installer potenziata sul modello di ANIIMO:
+  - Confronto automatico delle patch supportate vs versione client rilevata.
+  - Fallback dinamico all'inglese: in caso di futuri aggiornamenti CIG non ancora
+    convalidati, l'installer genera un payload ibrido al volo senza bloccare il gioco.
+  - Preservazione differenziale avanzata del file `user.cfg`.
+- SHA-256 sorgente inglese:
+  `037071E9FC8F402FEE87E76B5CA175F4AE7BEF5CF443A3A89727DB9B139AE2F3`.
+- SHA-256 payload italiano:
+  `CE0FBEA65B404B7E17293E76F1F1DD28344753239EAA7FDA37B9E2A1F58B492F`.
+- SHA-256 installer:
+  `282F1ADA8BE89631C81018C5C155F8CADF4406308F6CFB3D3840C6E9EA30B521`.
+
 ## 4.10 — Revisione 1
 
 - Aggiornata la localizzazione alla LIVE `4.10`, build `4.10.191.2241`, branch

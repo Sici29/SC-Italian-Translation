@@ -31,16 +31,18 @@ except Exception:
 
 
 APP_TITLE = "Star Citizen - Traduzione Italiana Non Ufficiale"
-TRANSLATION_VERSION = "4.10-R1"
-RELEASE_TAG = "sc-4.10-r1"
-INSTALLER_FILENAME = "StarCitizen_Traduzione_Italiana_4.10_R1.exe"
+TRANSLATION_VERSION = "4.10-R2"
+RELEASE_TAG = "sc-4.10-r2"
+INSTALLER_FILENAME = "StarCitizen_Traduzione_Italiana_4.10_R2.exe"
 SUPPORTED_BRANCH = "sc-alpha-4.10.0"
-SUPPORTED_P4_CHANGE = "12519617"
-VERIFIED_P4_CHANGES = frozenset({SUPPORTED_P4_CHANGE})
-EXPECTED_ENTRIES = 90363
-EXPECTED_PAYLOAD_SHA256 = "96CAB8C9053F2B85D2D2AE2F7A8E231EEE8F993392CF680E36A70ED2C9DFCB08"
-EXPECTED_SOURCE_SHA256 = "7DF68893F0EC8564D9E123024CF06C6C731DD7ACC36B528C7CAA06104AD74E11"
-EXPECTED_SOURCE_BYTES = 10476385
+SUPPORTED_P4_CHANGE = "12660092"
+VERIFIED_P4_CHANGES = frozenset(
+    {"12519617", "12572603", SUPPORTED_P4_CHANGE}
+)
+EXPECTED_ENTRIES = 90437
+EXPECTED_PAYLOAD_SHA256 = "CE0FBEA65B404B7E17293E76F1F1DD28344753239EAA7FDA37B9E2A1F58B492F"
+EXPECTED_SOURCE_SHA256 = "037071E9FC8F402FEE87E76B5CA175F4AE7BEF5CF443A3A89727DB9B139AE2F3"
+EXPECTED_SOURCE_BYTES = 10491521
 STARBREAKER_VERSION = "0.3.2"
 
 GITHUB_PROJECT_URL = "https://github.com/Sici29/SC-Italian-Translation"
@@ -518,6 +520,84 @@ def compatibility_report(info: BuildInfo, game_dir: Path | None = None) -> dict:
     }
 
 
+def parse_ini_entries(raw: bytes) -> tuple[dict[str, str], list[str]]:
+    text, _ = decode_text(raw)
+    entries: dict[str, str] = {}
+    order: list[str] = []
+    for line in text.splitlines():
+        if not line or line.lstrip().startswith((";", "#")):
+            continue
+        if "=" in line:
+            key, val = line.split("=", 1)
+            if key not in entries:
+                order.append(key)
+            entries[key] = val
+    return entries, order
+
+
+def compare_and_build_hybrid_payload(
+    game_dir: Path,
+    base_payload_path: Path,
+) -> tuple[bytes, dict]:
+    """Costruisce un payload ibrido quando viene rilevata una nuova patch del gioco.
+
+    Traduce tutte le chiavi note in italiano e applica il fallback dinamico
+    all'inglese della nuova patch per le sole stringhe nuove o modificate.
+    """
+    p4k = game_dir / "Data.p4k"
+    if not p4k.is_file():
+        raise FileNotFoundError(f"Archivio di gioco non trovato: {p4k}")
+    helper = starbreaker_path()
+    with tempfile.TemporaryDirectory(prefix="sc-it-hybrid-") as folder:
+        output = Path(folder)
+        cmd = [
+            str(helper),
+            "p4k",
+            "extract",
+            "--p4k",
+            str(p4k),
+            "-o",
+            str(output),
+            "--filter",
+            SOURCE_GLOBAL_REL.as_posix(),
+        ]
+        subprocess.check_call(
+            cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        extracted = output / SOURCE_GLOBAL_REL
+        if not extracted.is_file():
+            raise FileNotFoundError(
+                "Impossibile estrarre il catalogo inglese dal Data.p4k per il fallback."
+            )
+        en_entries, en_order = parse_ini_entries(extracted.read_bytes())
+
+    it_entries, _ = parse_ini_entries(base_payload_path.read_bytes())
+
+    translated_count = 0
+    fallback_count = 0
+    lines: list[str] = []
+    for key in en_order:
+        en_val = en_entries[key]
+        if key in it_entries:
+            lines.append(f"{key}={it_entries[key]}")
+            translated_count += 1
+        else:
+            lines.append(f"{key}={en_val}")
+            fallback_count += 1
+
+    hybrid_raw = b"\xef\xbb\xbf" + ("\r\n".join(lines) + "\r\n").encode("utf-8")
+    stats = {
+        "total_keys": len(en_order),
+        "translated_keys": translated_count,
+        "fallback_keys": fallback_count,
+        "coverage_percent": (
+            (translated_count / len(en_order) * 100.0) if en_order else 0.0
+        ),
+        "sha256": sha256_bytes(hybrid_raw),
+    }
+    return hybrid_raw, stats
+
+
 def compatibility_status(
     info: BuildInfo,
     game_dir: Path | None = None,
@@ -657,17 +737,22 @@ def record_installed_state(
     info: BuildInfo,
     backup: Path,
     installed_user_cfg: bytes,
+    payload_sha256: str | None = None,
+    fallback_stats: dict | None = None,
 ) -> dict:
     state = {
         "installed_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "game_dir": str(paths.game_dir),
         "translation_version": TRANSLATION_VERSION,
         "release_tag": RELEASE_TAG,
-        "payload_sha256": EXPECTED_PAYLOAD_SHA256,
+        "payload_sha256": payload_sha256 or EXPECTED_PAYLOAD_SHA256,
         "installed_user_cfg_sha256": sha256_bytes(installed_user_cfg),
         "backup": str(backup),
         "build": asdict(info),
     }
+    if fallback_stats:
+        state["fallback_mode"] = True
+        state["fallback_stats"] = fallback_stats
     write_json(STATE_PATH, state)
     return state
 
@@ -693,7 +778,17 @@ def translation_status(paths: GamePaths) -> dict:
     audio_ok = values.get("g_languageaudio", "").replace(" ", "").casefold() == (
         "g_languageaudio=english"
     )
-    payload_ok = global_hash == EXPECTED_PAYLOAD_SHA256
+    state = load_installed_state()
+    recorded_tag = str(state.get("release_tag") or "")
+    recorded_version = str(state.get("translation_version") or "")
+    recorded_hash = str(state.get("payload_sha256") or "")
+    fallback_active = bool(state.get("fallback_mode"))
+    payload_ok = (global_hash == EXPECTED_PAYLOAD_SHA256) or (
+        fallback_active
+        and (recorded_tag == RELEASE_TAG or recorded_version == TRANSLATION_VERSION)
+        and bool(recorded_hash)
+        and global_hash == recorded_hash
+    )
     return {
         "installed": bool(global_exists and language_ok),
         "matches_current": bool(payload_ok and language_ok and audio_ok),
@@ -702,7 +797,8 @@ def translation_status(paths: GamePaths) -> dict:
         "payload_matches": payload_ok,
         "language_configured": language_ok,
         "english_audio_configured": audio_ok,
-        "recorded_version": load_installed_state().get("translation_version"),
+        "recorded_version": state.get("translation_version"),
+        "fallback_mode": fallback_active,
     }
 
 
@@ -814,6 +910,7 @@ def install_translation(
     *,
     force: bool = False,
     force_open: bool = False,
+    allow_fallback: bool = False,
 ) -> dict:
     paths = resolve_paths(game_dir)
     if not looks_like_game_dir(paths.game_dir):
@@ -828,19 +925,43 @@ def install_translation(
     compatibility = compatibility_report(info, paths.game_dir)
     compatible = bool(compatibility["compatible"])
     reason = str(compatibility["reason"])
-    if not compatible and not force:
-        raise RuntimeError(
-            "Questa versione del gioco non è ancora verificata per la traduzione: " + reason
-        )
+    method = compatibility.get("method")
+
+    is_fallback = False
+    hybrid_stats = None
+    if not compatible:
+        if method == "source_changed" and (allow_fallback or force):
+            is_fallback = True
+        else:
+            raise RuntimeError(
+                "Questa versione del gioco non è ancora verificata per la traduzione: " + reason
+            )
+
     payload_path = source_payload_root() / TARGET_GLOBAL_REL
     payload = validate_payload(payload_path)
     backup = backup_live(paths, info)
     try:
-        atomic_write_bytes(paths.target_global, payload_path.read_bytes())
+        if is_fallback:
+            hybrid_raw, hybrid_stats = compare_and_build_hybrid_payload(
+                paths.game_dir, payload_path
+            )
+            atomic_write_bytes(paths.target_global, hybrid_raw)
+            installed_payload_sha256 = hybrid_stats["sha256"]
+        else:
+            atomic_write_bytes(paths.target_global, payload_path.read_bytes())
+            installed_payload_sha256 = EXPECTED_PAYLOAD_SHA256
+
         original_cfg = paths.user_cfg.read_bytes() if paths.user_cfg.is_file() else None
         installed_cfg = update_user_cfg(original_cfg)
         atomic_write_bytes(paths.user_cfg, installed_cfg)
-        state = record_installed_state(paths, info, backup, installed_cfg)
+        state = record_installed_state(
+            paths,
+            info,
+            backup,
+            installed_cfg,
+            payload_sha256=installed_payload_sha256,
+            fallback_stats=hybrid_stats,
+        )
         status = translation_status(paths)
         if not status["matches_current"]:
             raise RuntimeError("La verifica finale dell'installazione non è riuscita.")
@@ -857,6 +978,8 @@ def install_translation(
         "backup": str(backup),
         "state": state,
         "status": status,
+        "is_fallback": is_fallback,
+        "fallback_stats": hybrid_stats,
     }
 
 
@@ -1201,8 +1324,12 @@ def print_status_panel(status: dict, colors: bool) -> None:
         print(color_text("✗ GIOCO NON TROVATO", ConsoleColor.BOLD + ConsoleColor.RED, colors))
         print("Indica la cartella LIVE di Star Citizen per continuare.")
     elif compatible is not True:
-        print(color_text("⚠ BUILD NON VERIFICATA", ConsoleColor.BOLD + ConsoleColor.YELLOW, colors))
-        print(status.get("compatibility_reason") or "La build installata non è supportata.")
+        if status.get("compatibility_method") == "source_changed":
+            print(color_text("⚠ NUOVA VERSIONE GIOCO (FALLBACK INGLESE)", ConsoleColor.BOLD + ConsoleColor.YELLOW, colors))
+            print("Rilevata una build più recente. È possibile installare con fallback all'inglese per i testi nuovi.")
+        else:
+            print(color_text("⚠ BUILD NON VERIFICATA", ConsoleColor.BOLD + ConsoleColor.YELLOW, colors))
+            print(status.get("compatibility_reason") or "La build installata non è supportata.")
     elif translation.get("matches_current"):
         print(color_text("✓ TRADUZIONE AGGIORNATA", ConsoleColor.BOLD + ConsoleColor.GREEN, colors))
         print(f"La {TRANSLATION_VERSION} coincide con i file installati.")
@@ -1288,14 +1415,30 @@ def command_check(game_dir: str | None) -> int:
     return 0 if compatible else 2
 
 
-def command_install(game_dir: str | None, force: bool, force_open: bool) -> int:
+def command_install(
+    game_dir: str | None,
+    force: bool,
+    force_open: bool,
+    allow_fallback: bool = False,
+) -> int:
     resolved, _ = resolve_game_dir_with_source(game_dir)
-    report = install_translation(resolved, force=force, force_open=force_open)
+    report = install_translation(
+        resolved, force=force, force_open=force_open, allow_fallback=allow_fallback
+    )
     print("Installazione completata e verificata.")
     print("Cartella LIVE :", report["game_dir"])
     print("Backup        :", report["backup"])
-    print("Righe         :", report["payload"]["entries"])
-    print("SHA-256       :", report["payload"]["sha256"])
+    if report.get("is_fallback"):
+        fb = report.get("fallback_stats") or {}
+        print("Modalità      : Fallback dinamico (nuova patch)")
+        print(
+            f"Copertura     : {fb.get('translated_keys', 0)}/{fb.get('total_keys', 0)} "
+            f"({fb.get('coverage_percent', 0):.1f}%) in italiano, "
+            f"{fb.get('fallback_keys', 0)} in inglese"
+        )
+    else:
+        print("Righe         :", report["payload"]["entries"])
+    print("SHA-256       :", report["status"]["global_sha256"])
     return 0
 
 
@@ -1346,6 +1489,20 @@ def run_menu() -> int:
     choice = input("Scelta [Invio = installa]: ").strip() or "1"
     if choice == "0":
         return 0
+    if choice == "1":
+        allow_fallback = False
+        if status.get("compatibility_method") == "source_changed":
+            print()
+            print(color_text("ATTENZIONE: Rilevata una versione di gioco più recente!", ConsoleColor.YELLOW, colors))
+            print("I testi noti saranno in italiano, mentre le stringhe nuove rimarranno temporaneamente in inglese.")
+            ans = input("Vuoi procedere con l'installazione con fallback? [S/n]: ").strip().casefold()
+            if ans not in {"", "s", "si", "sì", "y", "yes"}:
+                print("Installazione annullata.")
+                return 0
+            allow_fallback = True
+        return command_install(
+            status.get("game_dir"), force=False, force_open=False, allow_fallback=allow_fallback
+        )
     if choice == "2":
         answer = input(
             "Vuoi davvero ripristinare i file precedenti? [s/N]: "
@@ -1365,10 +1522,8 @@ def run_menu() -> int:
     if choice == "6":
         show_technical_status(status)
         return 0
-    if choice != "1":
-        print("Scelta non valida.")
-        return 1
-    return command_install(None, False, False)
+    print("Scelta non valida.")
+    return 1
 
 
 def pause_if_needed(enabled: bool) -> None:
@@ -1392,6 +1547,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Ignora il controllo di compatibilità",
     )
     install.add_argument("--force-open", action="store_true", help="Ignora i processi aperti")
+    install.add_argument(
+        "--allow-fallback",
+        action="store_true",
+        help="Consente l'installazione su versioni più recenti con fallback inglese",
+    )
     restore = sub.add_parser("restore", help="Ripristina l'ultimo backup")
     restore.add_argument("--game-dir")
     restore.add_argument("--force-open", action="store_true", help="Ignora i processi aperti")
@@ -1422,7 +1582,12 @@ def main() -> int:
         if args.command == "check":
             return command_check(args.game_dir)
         if args.command == "install":
-            return command_install(args.game_dir, args.force, args.force_open)
+            return command_install(
+                args.game_dir,
+                args.force,
+                args.force_open,
+                allow_fallback=args.allow_fallback,
+            )
         if args.command == "restore":
             return command_restore(args.game_dir, args.force_open)
         if args.command == "update":

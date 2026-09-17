@@ -16,7 +16,7 @@ Windows in un unico file, backup automatico e ripristino.
 Il file da scaricare è:
 
 ```text
-StarCitizen_Traduzione_Italiana_4.10_R1.exe
+StarCitizen_Traduzione_Italiana_4.10_R2.exe
 ```
 
 ### 2. Chiudi gioco e launcher
@@ -28,8 +28,9 @@ Chiudi completamente **Star Citizen** e **RSI Launcher**.
 Fai doppio clic sull'EXE e premi **Invio**. L'installer:
 
 - trova automaticamente la cartella `LIVE`;
-- verifica il contenuto della localizzazione inglese installata;
-- controlla l'integrità delle 90.363 stringhe italiane incorporate;
+- verifica il contenuto della localizzazione inglese installata e confronta la patch;
+- in caso di future patch CIG non ancora convalidate, attiva il fallback dinamico all'inglese (stile ANIIMO) per evitare blocchi;
+- controlla l'integrità delle 90.437 stringhe italiane incorporate;
 - crea un backup prima di modificare qualsiasi file;
 - installa la lingua italiana mantenendo l'audio inglese;
 - verifica nuovamente file e configurazione al termine;
@@ -109,33 +110,25 @@ Scelte come `Hangar`, `Multitool`, `Centro Cargo`, `Area di atterraggio` e
 `Piattaforma di atterraggio` non sono casuali: sono registrate nel glossario e
 applicate in modo coerente.
 
-## Stato della 4.10-R1
+## Stato della 4.10-R2
 
-- Copertura: **90.363 / 90.363 chiavi**.
-- Stringhe traducibili approvate manualmente: **89.437**.
+- Copertura: **90.437 / 90.437 chiavi** (**100,00% manuale umana**).
+- Stringhe traducibili approvate manualmente: **89.511**.
 - Integrazioni manuali prive di sorgente inglese: **636**.
 - Stringhe classificate come non traducibili: **114**.
 - Stringhe intenzionalmente vuote: **176**.
-- Build verificata: **4.10.191.2241**, branch `sc-alpha-4.10.0`, change
-  **12519617**.
-- Delta rispetto alla 4.9: **287 chiavi aggiunte, 45 rimosse, 156 modificate e
-  89.920 invariate**.
-- Tutte le **443 chiavi aggiunte o modificate** presenti nella 4.10 sono state
-  revisionate.
+- Build verificata: **4.10.193.11644**, branch `sc-alpha-4.10.0`, change **12660092** (aggiornamento del 17 settembre 2026).
+- Delta rispetto alla 4.10-R1: **83 chiavi aggiunte, 9 rimosse, 4 modificate e 90.350 invariate**.
+- Tutte le **87 chiavi aggiunte o modificate** sono state tradotte e revisionate professionalmente.
 - Chiavi mancanti, extra, duplicate o malformate: **0**.
 - Caratteri corrotti o mojibake: **0**.
-- Versione: **Traduzione italiana Star Citizen 4.10 — Revisione 1**.
-- Novità dell'installer: aggiornamento automatico con download HTTPS dal
-  repository ufficiale, controllo del nome, della dimensione e dell'impronta
-  SHA-256 prima dell'avvio.
-- Protezione delle maiuscole accentate applicata a **2.066 chiavi UI**; altre
-  **79 chiavi condivise** restano sottoposte a controllo conservativo e **22
-  valori** sono stati normalizzati.
-- Ripristino dell'installer vincolato al backup attivo, con conferma esplicita e
-  rifiuto automatico degli stati vecchi o non associati all'installazione.
-- SHA-256 sorgente inglese: `7DF68893F0EC8564D9E123024CF06C6C731DD7ACC36B528C7CAA06104AD74E11`.
-- SHA-256 payload: `96CAB8C9053F2B85D2D2AE2F7A8E231EEE8F993392CF680E36A70ED2C9DFCB08`.
-- SHA-256 installer: `D53244B9284B372D89B361F538B987AD9C54BCAA65A629AC76AD013CD52DB4C5`.
+- Versione: **Traduzione italiana Star Citizen 4.10 — Revisione 2**.
+- Novità dell'installer: architettura in stile ANIIMO con confronto automatico delle patch e fallback dinamico trasparente all'inglese su build CIG non ancora convalidate, per non bloccare mai l'avvio del gioco.
+- Protezione delle maiuscole accentate applicata a **2.066 chiavi UI**; altre **79 chiavi condivise** restano sottoposte a controllo conservativo e **22 valori** sono stati normalizzati.
+- Ripristino dell'installer vincolato al backup attivo, con conferma esplicita e rifiuto automatico degli stati vecchi o non associati all'installazione.
+- SHA-256 sorgente inglese: `037071E9FC8F402FEE87E76B5CA175F4AE7BEF5CF443A3A89727DB9B139AE2F3`.
+- SHA-256 payload: `CE0FBEA65B404B7E17293E76F1F1DD28344753239EAA7FDA37B9E2A1F58B492F`.
+- SHA-256 installer: `282F1ADA8BE89631C81018C5C155F8CADF4406308F6CFB3D3840C6E9EA30B521`.
 
 La base inglese è stata estratta direttamente dalla LIVE installata e confrontata
 byte per byte con quella usata per generare il payload pubblico. Dopo un
