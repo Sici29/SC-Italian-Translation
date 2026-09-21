@@ -359,7 +359,7 @@ def choose_game_dir_windows() -> str | None:
 
 def configure_game_dir() -> Path | None:
     print("Seleziona la cartella LIVE che contiene Data.p4k e Bin64.")
-    print(r"Esempio: D:\Robert Space Industries\StarCitizen\LIVE")
+    print(r"Esempio: C:\Program Files\Roberts Space Industries\StarCitizen\LIVE")
     raw = choose_game_dir_windows()
     if not raw:
         raw = input("Percorso della cartella LIVE (Invio per annullare): ").strip().strip('"')

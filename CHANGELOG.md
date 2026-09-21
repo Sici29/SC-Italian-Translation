@@ -14,7 +14,7 @@
   processi di raffinazione dettagliati (confronti resa/tempo/costo), nuovi veicoli
   ed equipaggiamenti (Sabre Raven EX, ATLS IKTI Akuma, verniciature esclusive, armi
   e armature), revisione missioni di costruzione e ascensori Orison.
-- Architettura installer potenziata sul modello di ANIIMO:
+- Architettura installer potenziata:
   - Confronto automatico delle patch supportate vs versione client rilevata.
   - Fallback dinamico all'inglese: in caso di futuri aggiornamenti CIG non ancora
     convalidati, l'installer genera un payload ibrido al volo senza bloccare il gioco.
@@ -82,7 +82,7 @@
 - Verificata la nuova build `4.9.186.58667`, change `12248363`, senza variazioni
   rispetto alle 90.121 stringhe della R2.
 - Aggiunta un'icona dedicata basata sul simbolo del gioco, con sfondo
-  trasparente e badge italiano maggiorato sul modello dell'installer ANIIMO.
+  trasparente e badge italiano ad alta visibilità.
 - Incorporato StarBreaker 0.3.2, distribuito con licenza MIT, esclusivamente per
   il controllo locale del file inglese.
 - Il testo italiano e il relativo hash restano invariati rispetto alla R2.
