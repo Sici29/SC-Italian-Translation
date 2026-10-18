@@ -72,21 +72,21 @@ class FakeResponse:
 def fake_release(payload: bytes, *, digest_payload: bytes | None = None) -> dict:
     digest_payload = payload if digest_payload is None else digest_payload
     return {
-        "tag_name": "sc-4.10-r3",
+        "tag_name": "sc-4.10-r4",
         "html_url": (
-            "https://github.com/Sici29/SC-Italian-Translation/releases/tag/sc-4.10-r3"
+            "https://github.com/Sici29/SC-Italian-Translation/releases/tag/sc-4.10-r4"
         ),
         "draft": False,
         "prerelease": False,
         "assets": [
             {
-                "name": "StarCitizen_Traduzione_Italiana_4.10_R3.exe",
+                "name": "StarCitizen_Traduzione_Italiana_4.10_R4.exe",
                 "state": "uploaded",
                 "size": len(payload),
                 "digest": "sha256:" + installer.sha256_bytes(digest_payload).lower(),
                 "browser_download_url": (
                     "https://github.com/Sici29/SC-Italian-Translation/releases/"
-                    "download/sc-4.10-r3/StarCitizen_Traduzione_Italiana_4.10_R3.exe"
+                    "download/sc-4.10-r4/StarCitizen_Traduzione_Italiana_4.10_R4.exe"
                 ),
             }
         ],
@@ -331,6 +331,7 @@ def test_release_update_metadata() -> None:
 
     assert installer.release_version_key("sc-4.10-r1") == (4, 10, 1)
     assert installer.release_version_key("sc-4.10-r2") == (4, 10, 2)
+    assert installer.release_version_key("sc-4.10-r3") == (4, 10, 3)
     assert installer.release_version_key("sc-4.11-r1") == (4, 11, 1)
     assert installer.release_version_key("sc-4.11-r1") > installer.release_version_key(
         installer.RELEASE_TAG
@@ -338,7 +339,7 @@ def test_release_update_metadata() -> None:
     assert installer.release_version_key("formato-ignoto") is None
     assert latest["available"] is True
     assert latest["download_ready"] is True
-    assert latest["latest"] == "sc-4.10-r3"
+    assert latest["latest"] == "sc-4.10-r4"
     assert latest["asset"]["size"] == len(payload)
     assert latest["asset"]["sha256"] == installer.sha256_bytes(payload)
 
@@ -358,7 +359,7 @@ def test_release_update_handles_invalid_utf8() -> None:
 
 def test_release_asset_identity_is_strict() -> None:
     release = fake_release(b"MZ-test-installer")
-    release["assets"][0]["name"] = "StarCitizen_Traduzione_Italiana_4.10_R2.exe"
+    release["assets"][0]["name"] = "StarCitizen_Traduzione_Italiana_4.10_R3.exe"
     try:
         installer.select_installer_asset(release)
     except RuntimeError as exc:
@@ -369,7 +370,7 @@ def test_release_asset_identity_is_strict() -> None:
     release = fake_release(b"MZ-test-installer")
     release["assets"][0]["browser_download_url"] = (
         "https://github.com/Sici29/SC-Italian-Translation/releases/download/"
-        "sc-4.10-r4/StarCitizen_Traduzione_Italiana_4.10_R3.exe"
+        "sc-4.10-r5/StarCitizen_Traduzione_Italiana_4.10_R4.exe"
     )
     try:
         installer.select_installer_asset(release)
@@ -381,7 +382,7 @@ def test_release_asset_identity_is_strict() -> None:
     release = fake_release(b"MZ-test-installer")
     release["assets"][0]["browser_download_url"] = (
         "https://github.com/Sici29/SC-Italian-Translation/releases/download/"
-        "sc-4.10-r3/installer_diverso.exe"
+        "sc-4.10-r4/installer_diverso.exe"
     )
     try:
         installer.select_installer_asset(release)

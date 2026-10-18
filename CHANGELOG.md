@@ -1,5 +1,39 @@
 # Registro delle versioni
 
+## 4.10 — Revisione 3
+
+- Aggiornata la localizzazione alla LIVE `4.10.2`, build `4.10.197.2878`, branch
+  `sc-alpha-4.10.2`, change `12913470` (aggiornamento del 18/10/2026).
+- Portata la copertura a **90.946 chiavi**: 90.020 approvate manualmente, 636
+  integrazioni manuali prive di sorgente inglese, 114 non traducibili e 176
+  intenzionalmente vuote (**100,00% di copertura manuale umana**).
+- Rispetto alla 4.10-R2: **521 chiavi aggiunte, 12 rimosse, 56 modificate e 90.369
+  invariate**. Tutte le **577 chiavi aggiunte o modificate** sono state tradotte
+  e revisionate professionalmente in 4 lotti dedicati.
+- Nuovi contenuti tradotti:
+  - Evento IASI (Intergalactic Aerospace Science Institute), missioni scientifiche,
+    incarichi di rifornimento, ricompense e distintivi.
+  - Nuove armi, strumenti ed equipaggiamenti (fucile S71 Infrared, mitra P8-SC Echo,
+    fucile a pompa R97 Runic e Ravager-212 Infrared, cecchino Atzkav Starwalker,
+    mitragliatrice F55 Shadowflux, modulo Cambio-II Glacier SRT, raggio traente MaxLift-II Keelback).
+  - Nuove armature e tute (serie Zeus Exploration Keelback/Echo/Glacier,
+    completi Venture Starwalker/Infrared, elmo BUL-H4 Stronghold Nine Tails,
+    corazze e zaini Morozov-SH-I / Morozov-CH Kalahari/Galvanic/Headstone,
+    linea completa Monolith Heavy Armor Liquidator/Tsunami/Sandhawk/Serpentine/Runic/Blackheart/Shadowflux/Silver Strike/Oubliette).
+  - Flight Blade Broad & Rabiee per Aurora Mk II, Mantis, Meteor, Zeus Mk II CL ed ES.
+  - Nuovi veicoli RSI Skylark e rinnovata serie Constellation Mk5 (Andromeda, Aquila, Taurus) con relative livree e descrizioni.
+  - Nuove ricette di fabbricazione Banu del Collezionista Wikelo e decorazioni per hangar.
+- Architettura installer e compatibilità:
+  - Riconoscimento nativo del branch `sc-alpha-4.10.2` e change `12913470`.
+  - Piena retrocompatibilità con tutte le build del ciclo 4.10 (12519617, 12572603, 12660092).
+  - Preservazione differenziale avanzata del file `user.cfg` e backup automatico.
+- SHA-256 sorgente inglese:
+  `80D0DF503C47CC0E31FE5F841880C03D0FC0A261912169E3482988412FF7E9B1`.
+- SHA-256 payload italiano:
+  `525833E0DA46E7D279867F211C84CD74862D5C658547DDFFC1C268E6FFC62450`.
+- SHA-256 installer:
+  `CB5DBF05B2D0A241824FDEAB43D805F279A82CF3A4A491FDBCC011903194F596`.
+
 ## 4.10 — Revisione 2
 
 - Aggiornata la localizzazione alla LIVE `4.10`, build `4.10.193.11644`, branch

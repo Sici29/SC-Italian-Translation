@@ -1,19 +1,6 @@
 # Star Citizen — Traduzione Italiana Non Ufficiale
 
-<!-- gioca-in-italiano:inizio -->
-<p align="center"><a href="https://sici29.github.io/gioca-in-italiano/"><img src="https://sici29.github.io/gioca-in-italiano/img/banner.jpg" alt="Gioca in Italiano: tutte le traduzioni italiane di Sici29 in un'app sola" width="100%"></a></p>
-
-> [!TIP]
-> **Tutte le mie traduzioni in un'app sola: [Gioca in Italiano](https://sici29.github.io/gioca-in-italiano/)**
->
-> Installa e aggiorna questa traduzione con un clic, ti avvisa quando esce una nuova versione e ti fa scoprire le altre: [Aniimo](https://sici29.github.io/gioca-in-italiano/aniimo/), [Neverness to Everness](https://sici29.github.io/gioca-in-italiano/neverness-to-everness/), [Fatekeeper](https://sici29.github.io/gioca-in-italiano/fatekeeper/) e [ARK: Survival Ascended](https://sici29.github.io/gioca-in-italiano/ark-survival-ascended/).
->
-> **Manca il tuo gioco?** [Proponilo](https://sici29.github.io/gioca-in-italiano/#proponi) e vota quelli proposti dagli altri: i più votati diventano le prossime traduzioni.
->
-> **[⬇ Scarica Gioca in Italiano](https://github.com/Sici29/gioca-in-italiano/releases/latest/download/GiocaInItaliano.exe)** · gratis, per Windows 10 e 11
-<!-- gioca-in-italiano:fine -->
-
-Localizzazione italiana completa, curata e professionale per **Star Citizen LIVE 4.10**.  
+Localizzazione italiana completa, curata e professionale per **Star Citizen LIVE 4.10.2**.  
 Include un installer Windows standalone in un unico file con backup automatico, ripristino e gestione intelligente degli aggiornamenti.
 
 > [!NOTE]
@@ -27,13 +14,13 @@ Include un installer Windows standalone in un unico file con backup automatico, 
 Scarica l'eseguibile verificato più recente:  
 👉 [**Download Diretto (GitHub Releases)**](https://github.com/Sici29/SC-Italian-Translation/releases/latest)
 
-File: `StarCitizen_Traduzione_Italiana_4.10_R2.exe`
+File: `StarCitizen_Traduzione_Italiana_4.10_R3.exe`
 
 ### 2. Chiudi gioco e launcher
 Assicurati che **Star Citizen** e **RSI Launcher** siano completamente chiusi.
 
 ### 3. Avvia e installa
-Fai doppio clic su `StarCitizen_Traduzione_Italiana_4.10_R2.exe` e premi **Invio**.  
+Fai doppio clic su `StarCitizen_Traduzione_Italiana_4.10_R3.exe` e premi **Invio**.  
 L'installer si occuperà di tutto:
 - Rileva automaticamente la cartella `LIVE` del gioco;
 - Crea un backup di sicurezza dei file originali;
@@ -46,7 +33,7 @@ Avvia normalmente il gioco da **RSI Launcher**!
 
 ## ✨ Caratteristiche Principali
 
-- **Traduzione 100% Umana e Professionale:** Oltre 90.400 stringhe revisionate manualmente senza traduzioni automatiche approssimative, con adattamento naturale di dialoghi, missioni e lore.
+- **Traduzione 100% Umana e Professionale:** Oltre 90.900 stringhe revisionate manualmente senza traduzioni automatiche approssimative, con adattamento naturale di dialoghi, missioni e lore.
 - **Glossario Vincolante:** Più di 4.700 voci codificate per garantire coerenza terminologica assoluta tra veicoli, armi, equipaggiamento e interfacce.
 - **Compatibilità Totale con Guide e Mappe:** Nomi propri di sistemi, pianeti, stazioni, modelli di navi e comandi rimangono conformi agli standard della community internazionale per non disorientare i piloti.
 - **Zero Blocchi (Fallback Dinamico):** Se CIG pubblica una nuova micro-patch non ancora verificata, l'installer genera al volo un catalogo ibrido funzionante (testi noti in italiano, testi nuovi provvisoriamente in inglese), garantendo che il gioco parta sempre senza crash o blocchi.
@@ -103,18 +90,18 @@ Per preservare l'immersione, la compatibilità con le guide online e il corretto
 ## 🔍 Dettagli Tecnici e Stato Release
 
 <details>
-<summary><strong>Stato e Impronte SHA-256 (Release 4.10-R2)</strong></summary>
+<summary><strong>Stato e Impronte SHA-256 (Release 4.10-R3)</strong></summary>
 
-- **Versione Client LIVE supportata:** `4.10.193.11644` (branch `sc-alpha-4.10.0`, change `12660092`)
-- **Copertura traduzione:** `90.437 / 90.437` stringhe (**100,00% manuale**)
-- **Chiavi approvate:** 89.511 manuali | 636 integrazioni | 114 non traducibili | 176 vuote
+- **Versione Client LIVE supportata:** `4.10.197.2878` (branch `sc-alpha-4.10.2`, change `12913470`)
+- **Copertura traduzione:** `90.946 / 90.946` stringhe (**100,00% manuale**)
+- **Chiavi approvate:** 90.020 manuali | 636 integrazioni | 114 non traducibili | 176 vuote
 - **Verifiche e QA:** 7 suite di test di localizzazione + 15 controlli installer superati
 
 | File | Dimensione | SHA-256 |
 | :--- | :--- | :--- |
-| **Sorgente LIVE inglese** | 10.491.521 B | `037071E9FC8F402FEE87E76B5CA175F4AE7BEF5CF443A3A89727DB9B139AE2F3` |
-| **Payload italiano** | 11.201.218 B | `CE0FBEA65B404B7E17293E76F1F1DD28344753239EAA7FDA37B9E2A1F58B492F` |
-| **Installer EXE (4.10-R2)** | 17.229.751 B | `282F1ADA8BE89631C81018C5C155F8CADF4406308F6CFB3D3840C6E9EA30B521` |
+| **Sorgente LIVE inglese** | 10.616.527 B | `80D0DF503C47CC0E31FE5F841880C03D0FC0A261912169E3482988412FF7E9B1` |
+| **Payload italiano** | 11.340.562 B | `525833E0DA46E7D279867F211C84CD74862D5C658547DDFFC1C268E6FFC62450` |
+| **Installer EXE (4.10-R3)** | 17.247.711 B | `CB5DBF05B2D0A241824FDEAB43D805F279A82CF3A4A491FDBCC011903194F596` |
 
 </details>
 

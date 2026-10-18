@@ -1,18 +1,20 @@
-# Traduzione italiana Star Citizen 4.10 — Revisione 2
+# Traduzione italiana Star Citizen 4.10 — Revisione 3
 
-Seconda revisione della localizzazione italiana non ufficiale per Star Citizen
-LIVE 4.10 (build `4.10.193.11644`, change `12660092`, aggiornamento del 17 settembre 2026).
+Terza revisione della localizzazione italiana non ufficiale per Star Citizen
+LIVE 4.10.2 (build `4.10.197.2878`, branch `sc-alpha-4.10.2`, change `12913470`, aggiornamento del 18 ottobre 2026).
 
-## Novità della 4.10-R2
+## Novità della 4.10-R3
 
-- **Copertura 100% manuale umana:** Tutte le 87 chiavi aggiunte o modificate dalla patch CIG sono state tradotte e revisionate professionalmente.
+- **Copertura 100% manuale umana:** Tutte le 577 chiavi aggiunte o modificate dalla patch CIG sono state tradotte e revisionate professionalmente in 4 lotti dedicati.
 - **Nuovi contenuti inclusi:**
-  - Distintivi e titoli evento *Orison Relief* (Tier 1-6).
-  - Schede informative e parametri comparativi dei processi di raffinazione (resa, tempo, costo).
-  - Nuovi veicoli, armature e armi (*Sabre Raven EX*, *ATLS IKTI Akuma*, livree esclusive).
-  - Testi aggiornati per missioni di costruzione e ascensori di Orison.
+  - Evento IASI (Intergalactic Aerospace Science Institute), missioni scientifiche, incarichi di rifornimento, ricompense e distintivi.
+  - Nuove armi ed equipaggiamenti (fucile S71 Infrared, mitra P8-SC Echo, fucili a pompa R97 Runic e Ravager-212 Infrared, fucile di precisione Atzkav Starwalker, mitragliatrice leggera F55 Shadowflux, modulo Cambio-II Glacier SRT, raggio traente MaxLift-II Keelback).
+  - Nuove armature e tute (serie Zeus Exploration Keelback/Echo/Glacier, completi Venture Starwalker/Infrared, elmo BUL-H4 Stronghold Nine Tails, corazze e zaini Morozov-SH-I / Morozov-CH Kalahari/Galvanic/Headstone, linea completa Monolith Heavy Armor Liquidator/Tsunami/Sandhawk/Serpentine/Runic/Blackheart/Shadowflux/Silver Strike/Oubliette).
+  - Flight Blade Broad & Rabiee per Aurora Mk II, Mantis, Meteor, Zeus Mk II CL ed ES.
+  - Nuovi veicoli RSI Skylark e rinnovata serie Constellation Mk5 (Andromeda, Aquila, Taurus) con relative livree e descrizioni.
+  - Nuove ricette di fabbricazione Banu del Collezionista Wikelo e decorazioni per hangar.
 - **Installer potenziato:**
-  - **Confronto patch automatico:** rileva e confronta la build installata con quelle convalidate.
+  - **Confronto patch automatico:** rileva e riconosce nativamente `sc-alpha-4.10.2` (change `12913470`) mantenendo la retrocompatibilità con tutte le build del ciclo 4.10 (`12519617`, `12572603`, `12660092`).
   - **Fallback dinamico all'inglese (Zero blocchi):** se CIG rilascia una nuova build non ancora convalidata, l'installer estrae automaticamente il catalogo inglese dal `Data.p4k` locale e compone al volo un payload ibrido funzionante (testi noti in italiano, testi inediti in inglese) senza bloccare il giocatore.
   - **Rilevamento intelligente:** auto-rilevamento della cartella LIVE tramite registro Windows, percorsi standard o variabile d'ambiente.
   - **Preservazione differenziale:** conserva intatte le impostazioni video e comandi personalizzate in `user.cfg`.
@@ -21,35 +23,35 @@ LIVE 4.10 (build `4.10.193.11644`, change `12660092`, aggiornamento del 17 sette
 
 ## Compatibilità verificata
 
-- Ramo: `sc-alpha-4.10.0`
-- Build verificata: `4.10.193.11644`, change `12660092`
-- Build precedentemente verificate: `12519617`, `12572603`
-- Chiavi inglesi: `90.437`
-- Delta rispetto alla 4.10-R1: `83` aggiunte, `9` rimosse, `4` modificate e `90.350` invariate
-- Chiavi aggiunte o modificate revisionate: `87 / 87` (100%)
+- Ramo: `sc-alpha-4.10.2`
+- Build verificata: `4.10.197.2878`, change `12913470`
+- Build precedentemente verificate: `12519617`, `12572603`, `12660092`
+- Chiavi inglesi: `90.946`
+- Delta rispetto alla 4.10-R2: `521` aggiunte, `12` rimosse, `56` modificate e `90.369` invariate
+- Chiavi aggiunte o modificate revisionate: `577 / 577` (100%)
 - SHA-256 sorgente inglese:
-  `037071E9FC8F402FEE87E76B5CA175F4AE7BEF5CF443A3A89727DB9B139AE2F3`
+  `80D0DF503C47CC0E31FE5F841880C03D0FC0A261912169E3482988412FF7E9B1`
 
 ## Integrità
 
-- Righe italiane: `90.437`
-- Traduzioni approvate manualmente: `89.511`
+- Righe italiane: `90.946`
+- Traduzioni approvate manualmente: `90.020`
 - Integrazioni manuali prive di sorgente inglese: `636`
 - Stringhe non traducibili: `114`
 - Stringhe intenzionalmente vuote: `176`
 - Glossario vincolante: `4.743` voci
 - Chiavi UI protette per le maiuscole accentate: `2.066`
 - SHA-256 payload italiano:
-  `CE0FBEA65B404B7E17293E76F1F1DD28344753239EAA7FDA37B9E2A1F58B492F`
+  `525833E0DA46E7D279867F211C84CD74862D5C658547DDFFC1C268E6FFC62450`
 - SHA-256 installer:
-  `282F1ADA8BE89631C81018C5C155F8CADF4406308F6CFB3D3840C6E9EA30B521`
+  `CB5DBF05B2D0A241824FDEAB43D805F279A82CF3A4A491FDBCC011903194F596`
 
 ## Installer unico
 
 La release contiene un solo file:
 
 ```text
-StarCitizen_Traduzione_Italiana_4.10_R2.exe
+StarCitizen_Traduzione_Italiana_4.10_R3.exe
 ```
 
 ## Installazione
