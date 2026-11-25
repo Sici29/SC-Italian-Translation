@@ -12,7 +12,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 
-EXPECTED_PAYLOAD_SHA256 = "525833E0DA46E7D279867F211C84CD74862D5C658547DDFFC1C268E6FFC62450"
+EXPECTED_PAYLOAD_SHA256 = "349C48964D862E5DADE137547BB3D7E1718926809F602F134A06FF4831699DB0"
 TARGET_REL = Path("Data") / "Localization" / "italian_(italy)" / "global.ini"
 
 
@@ -55,9 +55,9 @@ def main() -> int:
         (game / "Data.p4k").write_bytes(b"sandbox")
         manifest = {
             "Data": {
-                "Branch": "sc-alpha-4.10.2",
+                "Branch": "sc-alpha-4.10.0",
                 "Version": "4.10.qa",
-                "RequestedP4ChangeNum": "12913470",
+                "RequestedP4ChangeNum": "13220821",
                 "BuildDateStamp": "QA",
                 "BuildTimeStamp": "00:00:00",
             }

@@ -1,6 +1,7 @@
 # Star Citizen — Traduzione Italiana Non Ufficiale
 
-Localizzazione italiana completa, curata e professionale per **Star Citizen LIVE 4.10.2**.  
+Localizzazione italiana per **Star Citizen LIVE 4.10.3**, build **13220821**.
+
 Include un installer Windows standalone in un unico file con backup automatico, ripristino e gestione intelligente degli aggiornamenti.
 
 > [!NOTE]
@@ -14,13 +15,14 @@ Include un installer Windows standalone in un unico file con backup automatico, 
 Scarica l'eseguibile verificato più recente:  
 👉 [**Download Diretto (GitHub Releases)**](https://github.com/Sici29/SC-Italian-Translation/releases/latest)
 
-File: `StarCitizen_Traduzione_Italiana_4.10_R3.exe`
+File: `StarCitizen_Traduzione_Italiana_4.10_R4.exe`
 
 ### 2. Chiudi gioco e launcher
 Assicurati che **Star Citizen** e **RSI Launcher** siano completamente chiusi.
 
 ### 3. Avvia e installa
-Fai doppio clic su `StarCitizen_Traduzione_Italiana_4.10_R3.exe` e premi **Invio**.  
+Fai doppio clic su `StarCitizen_Traduzione_Italiana_4.10_R4.exe` e premi **Invio**.
+
 L'installer si occuperà di tutto:
 - Rileva automaticamente la cartella `LIVE` del gioco;
 - Crea un backup di sicurezza dei file originali;
@@ -33,10 +35,10 @@ Avvia normalmente il gioco da **RSI Launcher**!
 
 ## ✨ Caratteristiche Principali
 
-- **Traduzione 100% Umana e Professionale:** Oltre 90.900 stringhe revisionate manualmente senza traduzioni automatiche approssimative, con adattamento naturale di dialoghi, missioni e lore.
+- **Catalogo completo:** 91.358 chiavi nella LIVE verificata, con dialoghi, missioni, interfaccia e descrizioni in italiano.
 - **Glossario Vincolante:** Più di 4.700 voci codificate per garantire coerenza terminologica assoluta tra veicoli, armi, equipaggiamento e interfacce.
 - **Compatibilità Totale con Guide e Mappe:** Nomi propri di sistemi, pianeti, stazioni, modelli di navi e comandi rimangono conformi agli standard della community internazionale per non disorientare i piloti.
-- **Zero Blocchi (Fallback Dinamico):** Se CIG pubblica una nuova micro-patch non ancora verificata, l'installer genera al volo un catalogo ibrido funzionante (testi noti in italiano, testi nuovi provvisoriamente in inglese), garantendo che il gioco parta sempre senza crash o blocchi.
+- **Verifica della build:** La R4 è verificata sulla LIVE 13220821. Per altre build l'installer confronta l'impronta del catalogo inglese. Se il catalogo differisce, il menu può proporre una modalità provvisoria con le chiavi note in italiano e quelle nuove in inglese.
 - **Ripristino Sicuro (Rollback Atomico):** Puoi tornare alla lingua originale in qualsiasi momento tramite il menu dell'installer (opzione `2`), ripristinando fedelmente i file precedenti.
 - **Aggiornamento Automatico Integrato:** All'avvio, l'installer verifica su GitHub se esiste una nuova revisione e può aggiornarsi in un clic con convalida SHA-256 integrata.
 
@@ -90,18 +92,19 @@ Per preservare l'immersione, la compatibilità con le guide online e il corretto
 ## 🔍 Dettagli Tecnici e Stato Release
 
 <details>
-<summary><strong>Stato e Impronte SHA-256 (Release 4.10-R3)</strong></summary>
+<summary><strong>Stato e Impronte SHA-256 (Release 4.10-R4)</strong></summary>
 
-- **Versione Client LIVE supportata:** `4.10.197.2878` (branch `sc-alpha-4.10.2`, change `12913470`)
-- **Copertura traduzione:** `90.946 / 90.946` stringhe (**100,00% manuale**)
-- **Chiavi approvate:** 90.020 manuali | 636 integrazioni | 114 non traducibili | 176 vuote
+- **Versione Client LIVE verificata:** `4.10.201.48085` (branch `sc-alpha-4.10.0`, change `13220821`)
+- **Copertura del catalogo:** `91.358 / 91.358` chiavi
+- **Delta dalla R3:** 427 aggiunte, 86 modificate, 15 rimosse, 90.845 invariate
+- **Stato editoriale:** 90.432 approvate, 636 integrazioni, 114 tecniche e 176 vuote
 - **Verifiche e QA:** 7 suite di test di localizzazione + 15 controlli installer superati
 
 | File | Dimensione | SHA-256 |
 | :--- | :--- | :--- |
-| **Sorgente LIVE inglese** | 10.616.527 B | `80D0DF503C47CC0E31FE5F841880C03D0FC0A261912169E3482988412FF7E9B1` |
-| **Payload italiano** | 11.340.562 B | `525833E0DA46E7D279867F211C84CD74862D5C658547DDFFC1C268E6FFC62450` |
-| **Installer EXE (4.10-R3)** | 17.247.711 B | `CB5DBF05B2D0A241824FDEAB43D805F279A82CF3A4A491FDBCC011903194F596` |
+| **Sorgente LIVE inglese** | 10.700.162 B | `99113D762AAABEB1519458E6FDCA7B45610BCCE3C5E3ADFB795C79A96FCB7CEA` |
+| **Payload italiano** | 11.427.512 B | `349C48964D862E5DADE137547BB3D7E1718926809F602F134A06FF4831699DB0` |
+| **Installer EXE (4.10-R4)** | 18.298.025 B | `8A32AE6885D1CC340A7536B7B2C7B956AAEEC4C4109895BD4116B7708557CBED` |
 
 </details>
 

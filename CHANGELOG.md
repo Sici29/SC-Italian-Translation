@@ -1,5 +1,11 @@
 # Registro delle versioni
 
+## 4.10 — Revisione 4
+
+- Aggiornata la localizzazione a Star Citizen LIVE 4.10.3, change `13220821`, versione interna `4.10.201.48085`.
+- Revisionate 513 chiavi tra nuove e modificate, con aggiornamenti per IAE 2956, incarichi InterSec, navi, equipaggiamenti e terminali veicoli.
+- Allineato l'installer al catalogo verificato della nuova LIVE. Verificati installazione, backup e ripristino su una LIVE di prova.
+
 ## 4.10 — Revisione 3
 
 - Aggiornata la localizzazione alla LIVE `4.10.2`, build `4.10.197.2878`, branch
