@@ -1,5 +1,11 @@
 # Registro delle versioni
 
+## 4.10 — Revisione 5
+
+- Ripristinate le denominazioni inglesi in 989 voci. Interventi su stazioni, destinazioni, modelli, livree, oggetti, organizzazioni, eventi e incarichi unici per facilitarne la ricerca nelle guide.
+- Secondo passaggio sui collegamenti tra mappa e missioni, incluse le piattaforme di Orison e i nomi dei siti ASD.
+- Confrontate tutte le 91.358 chiavi con la LIVE 4.10.3, build `13220821`. Verificati tag, variabili, installazione e ripristino.
+
 ## 4.10 — Revisione 4
 
 - Aggiornata la localizzazione a Star Citizen LIVE 4.10.3, change `13220821`, versione interna `4.10.201.48085`.

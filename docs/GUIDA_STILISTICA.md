@@ -30,6 +30,15 @@ I nomi ufficiali di città, avamposti, stazioni, cosmoporti e zone di interesse
 restano integralmente originali anche quando contengono sostantivi comuni, per
 esempio `August Dunlow Spaceport`, `Security Post Kareah` e `Ruin Station`.
 
+Quando una guida può rimandare a un nome, usa la denominazione inglese
+della LIVE in mappa, nell'inventario, negli obiettivi e nei briefing. La
+regola vale anche per varianti di navi, livree, edizioni di equipaggiamento,
+organizzazioni, eventi e titoli degli incarichi unici. Per esempio,
+`Wide Forest Station`, `Wikelo Emporium Dasi Station`,
+`Constellation Phoenix Emerald`, `Penumbra` e l'edizione `Pathfinder`
+mantengono la loro grafia. Le etichette funzionali, le descrizioni e i
+titoli generici dei contratti ripetibili continuano a seguire l'italiano.
+
 Il descrittore funzionale che accompagna il nome resta italiano: per esempio
 `Elmo Horizon`, `Sottotuta Beacon "Rust Society"` e `Livrea Foundation Fest`.
 Colori e qualifiche puramente descrittive seguono invece la grammatica italiana

@@ -1,19 +1,17 @@
-# Traduzione italiana Star Citizen 4.10 — Revisione 4
+# Traduzione italiana Star Citizen 4.10 — Revisione 5
 
-Aggiornamento della localizzazione italiana non ufficiale per **Star Citizen LIVE 4.10.3**, change `13220821` e versione interna `4.10.201.48085`.
+In questa revisione **989 voci** riportano le denominazioni inglesi della LIVE, così da poterle cercare nelle mappe e nelle guide. La R5 è compatibile con **Star Citizen LIVE 4.10.3, build `13220821`**.
 
-## Novità
+- Nomi di stazioni e destinazioni, come **Wide Forest Station**, **QV Logistics Station** e **Solanki Platform**.
+- Modelli, livree ed edizioni, come **Phoenix Emerald**, **Penumbra** e **Pathfinder**.
+- Nomi di eventi e di incarichi unici, come **Day of the Vara** e **End Nine Tails' Occupation at Orison**.
 
-- Aggiornati i testi dell'IAE 2956, le schede di navi, livree ed equipaggiamenti, gli incarichi InterSec e le voci dei terminali veicoli.
-- Revisionate **513 chiavi** tra nuove e modificate. Rispetto alla R3, **427 aggiunte**, **86 modificate**, **15 rimosse** e **90.845 invariate**.
-- Verificata la corrispondenza di tutte le **91.358 chiavi** con il catalogo LIVE e controllati tag, variabili e interruzioni di riga.
+Restano in italiano le descrizioni, gli obiettivi e le indicazioni generiche. Il catalogo conserva tutte le **91.358 chiavi** della LIVE. Installazione, verifica e ripristino sono stati collaudati con l'EXE su una LIVE di prova.
 
-## Installazione
+Chiudi Star Citizen e RSI Launcher, poi apri `StarCitizen_Traduzione_Italiana_4.10_R5.exe`. L'installer crea un backup, imposta i testi in italiano e mantiene l'audio inglese.
 
-Chiudi Star Citizen e RSI Launcher. Scarica `StarCitizen_Traduzione_Italiana_4.10_R4.exe`, aprilo e premi **Invio**. L'installer crea un backup, imposta i testi in italiano e mantiene l'audio in inglese. Installazione, controllo e ripristino sono stati collaudati su una LIVE di prova.
+L'eseguibile non è firmato. Verifica la sua impronta dopo il download.
 
-L'EXE non ha una firma digitale. Verifica l'impronta dopo il download.
-
-- **Dimensione:** 18.298.025 byte
-- **SHA-256 EXE:** `8A32AE6885D1CC340A7536B7B2C7B956AAEEC4C4109895BD4116B7708557CBED`
-- **SHA-256 payload italiano:** `349C48964D862E5DADE137547BB3D7E1718926809F602F134A06FF4831699DB0`
+- **Dimensione** 18.297.205 byte
+- **SHA-256 EXE** `51F77D5DED67E1EF36834DA3ECA21B65F8CE144B3431C49514BE11273014A7D3`
+- **SHA-256 payload italiano** `243E2AF83A3D473F1492703B22F62ECD6ECE5251C7BDE0D70AA39CECA0D2613A`
