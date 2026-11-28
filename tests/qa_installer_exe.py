@@ -20,7 +20,9 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest().upper()
 
 
-def run(exe: Path, args: list[str], env: dict[str, str]) -> str:
+def run(
+    exe: Path, args: list[str], env: dict[str, str], *, answers: str | None = None
+) -> str:
     result = subprocess.run(
         [str(exe), *args],
         check=False,
@@ -28,12 +30,13 @@ def run(exe: Path, args: list[str], env: dict[str, str]) -> str:
         text=True,
         encoding="utf-8",
         errors="replace",
+        input=answers,
         env=env,
         timeout=60,
     )
     if result.returncode != 0:
         raise RuntimeError(
-            f"Comando non riuscito ({result.returncode}): {' '.join(args)}\n"
+            f"Comando non riuscito ({result.returncode}): {' '.join(args) or 'menu'}\n"
             f"STDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
         )
     return result.stdout
@@ -49,14 +52,14 @@ def main() -> int:
 
     with TemporaryDirectory() as folder:
         root = Path(folder)
-        game = root / "StarCitizen" / "LIVE"
+        game = root / "GAME CON SPAZI" / "StarCitizen" / "LIVE"
         (game / "Bin64").mkdir(parents=True)
         (game / "Bin64" / "StarCitizen.exe").write_bytes(b"")
         (game / "Data.p4k").write_bytes(b"sandbox")
         manifest = {
             "Data": {
                 "Branch": "sc-alpha-4.10.0",
-                "Version": "4.10.qa",
+                "Version": "4.10.201.48085",
                 "RequestedP4ChangeNum": "13220821",
                 "BuildDateStamp": "QA",
                 "BuildTimeStamp": "00:00:00",
@@ -100,7 +103,25 @@ def main() -> int:
         assert (game / "user.cfg").read_text(encoding="utf-8") == "r_QASetting=1\n"
         assert not (work / "installed_state.json").exists()
 
+        previous_translation = b"qa_previous=Traduzione precedente\n"
+        previous_cfg = b"r_QASetting=1\r\ng_language=italian_(italy)\r\n"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(previous_translation)
+        (game / "user.cfg").write_bytes(previous_cfg)
+        for choice in ("1", ""):
+            menu_output = run(exe, [], env, answers=f"{choice}\n\n")
+            assert "altra versione rilevata" in menu_output
+            assert "Installazione completata e verificata." in menu_output
+            assert sha256(target) == EXPECTED_PAYLOAD_SHA256
+
+            menu_restore = run(exe, [], env, answers="2\ns\n\n")
+            assert "Ripristino completato." in menu_restore
+            assert target.read_bytes() == previous_translation
+            assert (game / "user.cfg").read_bytes() == previous_cfg
+            assert not (work / "installed_state.json").exists()
+
         print("installer_exe_qa: installazione, verifica e ripristino superati")
+        print("menu_qa: scelta 1, Invio e ripristino del catalogo precedente superati")
         print("install_output:", install_output.splitlines()[0])
         print("restore_output:", restore_output.splitlines()[0])
     return 0

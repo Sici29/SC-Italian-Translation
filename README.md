@@ -15,13 +15,13 @@ Include un installer Windows standalone in un unico file con backup automatico, 
 Scarica l'eseguibile verificato più recente:  
 👉 [**Download Diretto (GitHub Releases)**](https://github.com/Sici29/SC-Italian-Translation/releases/latest)
 
-File: `StarCitizen_Traduzione_Italiana_4.10_R5.exe`
+File: `StarCitizen_Traduzione_Italiana_4.10_R6.exe`
 
 ### 2. Chiudi gioco e launcher
 Assicurati che **Star Citizen** e **RSI Launcher** siano completamente chiusi.
 
 ### 3. Avvia e installa
-Fai doppio clic su `StarCitizen_Traduzione_Italiana_4.10_R5.exe` e premi **Invio**.
+Fai doppio clic su `StarCitizen_Traduzione_Italiana_4.10_R6.exe` e premi **Invio**.
 
 L'installer si occuperà di tutto:
 - Rileva automaticamente la cartella `LIVE` del gioco;
@@ -38,7 +38,7 @@ Avvia normalmente il gioco da **RSI Launcher**!
 - **Catalogo completo:** 91.358 chiavi nella LIVE verificata, con dialoghi, missioni, interfaccia e descrizioni in italiano.
 - **Glossario Vincolante:** Più di 4.700 voci codificate per garantire coerenza terminologica assoluta tra veicoli, armi, equipaggiamento e interfacce.
 - **Nomi riconoscibili nelle guide:** Le denominazioni inglesi di stazioni, luoghi, modelli, livree, equipaggiamenti ed eventi facilitano la ricerca nelle mappe e nelle guide.
-- **Verifica della build:** La R5 è verificata sulla LIVE 13220821. Per altre build l'installer confronta l'impronta del catalogo inglese. Se il catalogo differisce, il menu può proporre una modalità provvisoria con le chiavi note in italiano e quelle nuove in inglese.
+- **Verifica della build:** La R6 è verificata sulla LIVE 13220821. Per altre build l'installer confronta l'impronta del catalogo inglese. Se il catalogo differisce, il menu può proporre una modalità provvisoria con le chiavi note in italiano e quelle nuove in inglese.
 - **Ripristino Sicuro (Rollback Atomico):** Puoi tornare alla lingua originale in qualsiasi momento tramite il menu dell'installer (opzione `2`), ripristinando fedelmente i file precedenti.
 - **Aggiornamento Automatico Integrato:** All'avvio, l'installer verifica su GitHub se esiste una nuova revisione e può aggiornarsi in un clic con convalida SHA-256 integrata.
 
@@ -92,19 +92,19 @@ Per preservare l'immersione, la compatibilità con le guide online e il corretto
 ## 🔍 Dettagli Tecnici e Stato Release
 
 <details>
-<summary><strong>Stato e Impronte SHA-256 (Release 4.10-R5)</strong></summary>
+<summary><strong>Stato e Impronte SHA-256 (Release 4.10-R6)</strong></summary>
 
 - **Versione Client LIVE verificata:** `4.10.201.48085` (branch `sc-alpha-4.10.0`, change `13220821`)
 - **Copertura del catalogo:** `91.358 / 91.358` chiavi
 - **Delta dalla R4:** 989 voci aggiornate per ripristinare i nomi inglesi. La build LIVE è la stessa.
 - **Stato editoriale:** 90.432 approvate, 636 integrazioni, 114 tecniche e 176 vuote
-- **Verifiche e QA:** 7 suite di test di localizzazione + 15 controlli installer superati
+- **Verifiche e QA:** 15 controlli dell'installer e prova con l'EXE su una LIVE simulata, comprese le scelte `1`, `Invio` e il ripristino dal menu.
 
 | File | Dimensione | SHA-256 |
 | :--- | :--- | :--- |
 | **Sorgente LIVE inglese** | 10.700.162 B | `99113D762AAABEB1519458E6FDCA7B45610BCCE3C5E3ADFB795C79A96FCB7CEA` |
 | **Payload italiano** | 11.423.953 B | `243E2AF83A3D473F1492703B22F62ECD6ECE5251C7BDE0D70AA39CECA0D2613A` |
-| **Installer EXE (4.10-R5)** | 18.297.205 B | `51F77D5DED67E1EF36834DA3ECA21B65F8CE144B3431C49514BE11273014A7D3` |
+| **Installer EXE (4.10-R6)** | 18.298.388 B | `C3FBCBB80472A4B713747D91760593CDDF253CA2266C5099A104A8BD6A146F00` |
 
 </details>
 

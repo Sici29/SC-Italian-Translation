@@ -31,9 +31,9 @@ except Exception:
 
 
 APP_TITLE = "Star Citizen - Traduzione Italiana Non Ufficiale"
-TRANSLATION_VERSION = "4.10-R5"
-RELEASE_TAG = "sc-4.10-r5"
-INSTALLER_FILENAME = "StarCitizen_Traduzione_Italiana_4.10_R5.exe"
+TRANSLATION_VERSION = "4.10-R6"
+RELEASE_TAG = "sc-4.10-r6"
+INSTALLER_FILENAME = "StarCitizen_Traduzione_Italiana_4.10_R6.exe"
 SUPPORTED_BRANCH = "sc-alpha-4.10.0"
 SUPPORTED_P4_CHANGE = "13220821"
 VERIFIED_P4_CHANGES = frozenset({SUPPORTED_P4_CHANGE})
@@ -321,9 +321,10 @@ def candidate_game_dirs() -> list[tuple[Path, str]]:
     return unique
 
 
-def resolve_game_dir_with_source(raw: str | None = None) -> tuple[Path, str]:
+def resolve_game_dir_with_source(raw: str | Path | None = None) -> tuple[Path, str]:
     if raw:
-        normalized = normalize_selected_game_dir(Path(raw.strip().strip('"')))
+        selected_path = raw if isinstance(raw, Path) else Path(raw.strip().strip('"'))
+        normalized = normalize_selected_game_dir(selected_path)
         if normalized:
             return normalized, "manuale"
         raise FileNotFoundError("La cartella scelta non contiene una installazione LIVE valida.")
@@ -1414,7 +1415,7 @@ def command_check(game_dir: str | None) -> int:
 
 
 def command_install(
-    game_dir: str | None,
+    game_dir: str | Path | None,
     force: bool,
     force_open: bool,
     allow_fallback: bool = False,

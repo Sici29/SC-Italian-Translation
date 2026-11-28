@@ -1,5 +1,11 @@
 # Registro delle versioni
 
+## 4.10 — Revisione 6
+
+- Corretto l'errore `'WindowsPath' object has no attribute 'strip'` quando si avvia l'installazione dal menu con `1` o con `Invio`.
+- Collaudati installazione e ripristino dal menu con un percorso contenente spazi e una traduzione precedente già presente.
+- Il catalogo italiano è identico alla R5 e include le denominazioni inglesi ripristinate per mappe e guide.
+
 ## 4.10 — Revisione 5
 
 - Ripristinate le denominazioni inglesi in 989 voci. Interventi su stazioni, destinazioni, modelli, livree, oggetti, organizzazioni, eventi e incarichi unici per facilitarne la ricerca nelle guide.
